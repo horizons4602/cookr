@@ -9,9 +9,9 @@ CREATE TABLE user (
 
 CREATE TABLE recipe (
   id INTEGER PRIMARY KEY,
-  saving_user INTEGER NOT NULL,
   title TEXT NOT NULL,
   image TEXT,
   imageType TEXT,
+  saving_user INTEGER NOT NULL,
   FOREIGN KEY (saving_user) REFERENCES user (id)
 );

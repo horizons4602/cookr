@@ -2,22 +2,69 @@ from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, session
 )
 from werkzeug.exceptions import abort
+import logging
 
 from cookr.auth import login_required
 from cookr.db import get_db
+from cookr.recipeapi import get_recipes, get_recipe_desc
 
 bp = Blueprint('index', __name__)
 
 @bp.route('/')
 @login_required
-def index():
-    db = get_db()
-    posts = db.execute(
-        'SELECT p.id, title, body, created, author_id, username'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' ORDER BY created DESC'
-    ).fetchall()
-    return render_template('main/index.html', posts=posts)
+def home_page():
+    #session.clear()
+    return render_template('main/index.html')
+
+@bp.route('/findRecipes', methods=['GET', 'POST'])
+@login_required
+def query_user():
+    if request.method == 'POST':
+        cuisine = request.form['cuisine']
+        diet = request.form['diet']
+        meal_type = request.form['meal_type']
+
+        session['cuisine'] = cuisine
+        session['diet'] = diet
+        session['meal_type'] = meal_type
+        return redirect(url_for('index.find_recipes', offset=0))
+    return render_template('main/recipequery.html')
+
+@bp.route('/findRecipes/<int:offset>')
+@login_required
+def find_recipes(offset):
+    userParams = {'cuisine': session.get('cuisine'), 'diet': session.get('diet'), 'type': session.get('meal_type'), 'offset': offset}
+    print(userParams)
+    recipes = get_recipes(userParams)
+    if recipes == "No Recipes Found":
+        flash('No results found!')
+    if recipes == "Out of Recipes":
+        flash('No more results found!')
+    if recipes == "Out of API Calls":
+        flash('Service Temporarily Down, Please Try Again Later')
+    return render_template('main/recipes.html', recipes=recipes, params=userParams)
+
+# Accept or Reject recipe route
+bp.route('/swipe/<action>/<int:recipe_id>')
+def swipe(action, recipe_id):
+    # Add logic here to handle user's swipe (accept or reject)
+    # This will honestly be a simple averaging function, this is a job for backend
+    # Only acquire sweetness info when the user views more about the recipe (due to limits :)
+    # For now, we'll just redirect to the home page
+    return redirect(url_for('index'))
+
+# Generate new recipes route
+@bp.route('/generate')
+def generate():
+    offset = session.get('offset', 0)
+    offset += 100
+    session['offset'] = offset
+    return redirect(url_for('index'))
+
+# Generate new recipes route
+@bp.route('/recipeTaste/<int:recipe_id>')
+def recipe_information(recipe_id):
+    get_recipe_desc(recipe_id)
 
 @bp.route('/saved')
 @login_required

@@ -22,26 +22,24 @@
         <img src="{{ recipe.image }}" alt="{{ recipe.title }}">
         <p><a href="{{ recipe.url }}" target="_blank">View Recipe</a></p>
         <!--Here things like a general overview of ingredients, similarities to user preferences, diets/restrictions, etc. need to be all displayed on an overview section. probably a scrolling screen of some kind-->
-        <style>
-          .scrolling-list {
-            overflow-y: scroll;
-            max-height: 200px;
-          }
-        </style>
         <button onclick="window.location.href='/swipe/accept/{{ recipe.id }}'">Accept</button>
         <button onclick="window.location.href='/swipe/reject/{{ recipe.id }}'">Reject</button>
       </div>
     {% endfor %}
     <script>
-      // Automatically generate more recipes after the endfor loop
-      window.onload = function() {
-        window.location.href = '/generate';
-      };
+      // Automatically generate more recipes after the for loop
+      // button to continue searching 
+      <button onclick="window.location.href='/generate'">Continue looking</button>
+
+
+      //window.onload = function() {
+      //  window.location.href = '/generate';
+      //};
     </script>
   {% else %}
     <div>
-      <h2>Sorry, no more recipes found!</h2>
-      <button onclick="window.location.href='/findRecipes'">Start a new search</button>
+        <h2>Sorry, no more recipes found!</h2>
+        <button onclick="window.location.href='/findRecipes'">Start a new search</button>
     </div>
   {% endif %}
 </body>
