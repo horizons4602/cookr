@@ -10,6 +10,8 @@ CREATE TABLE user (
 CREATE TABLE recipe (
   id INTEGER PRIMARY KEY,
   title TEXT NOT NULL,
-  image TEXT NOT NULL,
-  imageType TEXT NOT NULL
+  image TEXT,
+  imageType TEXT,
+  saving_user INTEGER NOT NULL,
+  FOREIGN KEY (saving_user) REFERENCES user (id)
 );

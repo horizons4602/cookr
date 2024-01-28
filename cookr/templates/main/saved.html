@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Saved Recipes{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  {% if recipes %}
+    {% for recipe in recipes %}
+      <article class="recipe">
+        <header>
+          <div>
+            <h1>{{ recipe['title'] }}</h1>
+          </div>
+        </header>
+        <!-- Use Jinja2 syntax to insert the image URL -->
+        <img src="{{ recipe['image'] }}" alt="{{ recipe['title'] }}">
+      </article>
+      {% if not loop.last %}
+        <hr>
+      {% endif %}
+    {% endfor %}
+
+    <!-- Pagination controls -->
+    <div class="pagination">
+      {% if page > 1 %}
+        <a href="{{ url_for('main.saved', page=page-1) }}">Previous</a>
+      {% endif %}
+      
+      Page {{ page }} of {{ total_pages }}
+
+      {% if page < total_pages %}
+        <a href="{{ url_for('main.saved', page=page+1) }}">Next</a>
+      {% endif %}
+    </div>
+  {% else %}
+    <p>No saved recipes available.</p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,48 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cookr</title>
+</head>
+<body>
+  <h1>Cookr</h1>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <p>{{ messages[0] }}</p>
+    {% endif %}
+  {% endwith %}
+
+  {% if recipes %}
+    {% for recipe in recipes %}
+      <div>
+        <h2>{{ recipe.title }}</h2>
+        <img src="{{ recipe.image }}" alt="{{ recipe.title }}">
+        <p><a href="{{ recipe.url }}" target="_blank">View Recipe</a></p>
+        <!--Here things like a general overview of ingredients, similarities to user preferences, diets/restrictions, etc. need to be all displayed on an overview section. probably a scrolling screen of some kind-->
+        <style>
+          .scrolling-list {
+            overflow-y: scroll;
+            max-height: 200px;
+          }
+        </style>
+        <button onclick="window.location.href='/swipe/accept/{{ recipe.id }}'">Accept</button>
+        <button onclick="window.location.href='/swipe/reject/{{ recipe.id }}'">Reject</button>
+      </div>
+    {% endfor %}
+    <script>
+      // Automatically generate more recipes after the endfor loop
+      window.onload = function() {
+        window.location.href = '/generate';
+      };
+    </script>
+  {% else %}
+    <div>
+      <h2>Sorry, no more recipes found!</h2>
+      <button onclick="window.location.href='/findRecipes'">Start a new search</button>
+    </div>
+  {% endif %}
+</body>
+</html>
