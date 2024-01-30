@@ -28,7 +28,7 @@ class Recipe:
         self.healthScore = healthScore
     
     def __str__(self):
-        return f"ID: {self.id}\nImage {self.image}\nURL: {self.url}\nTitle: {self.title}\nIngredients: {self.ingredientNames}\nInstructions: {self.instructions}\nCheap: {self.cheap}\nDairy Free: {self.dairyFree}\nGluten Free: {self.glutenFree}\nVegan: {self.vegan}\nVegetarian: {self.vegetarian}\nVery Healthy: {self.veryHealthy}\nVery Popular: {self.veryPopular}\nHealth Score: {self.healthScore}\nSweetness: {self.sweetness}\nSaltiness: {self.saltiness}\nSourness: {self.sourness}\nBitterness: {self.bitterness}\nSavouriness: {self.savoriness}\nFattiness: {self.fattiness}\nSpiciness: {self.spiciness}"
+        return f"ID: {self.id}\nImage {self.image}\nURL: {self.url}\nTitle: {self.title}\nIngredients: {self.ingredientNames}\nInstructions: {self.instructions}\nCheap: {self.cheap}\nDairy Free: {self.dairyFree}\nGluten Free: {self.glutenFree}\nVegan: {self.vegan}\nVegetarian: {self.vegetarian}\nVery Healthy: {self.veryHealthy}\nVery Popular: {self.veryPopular}\nHealth Score: {self.healthScore}"
     
 class RecipeDesc:
         def __init__(self, id, sweetness, saltiness, sourness, bitterness, savoriness, fattiness, spiciness):
