@@ -20,21 +20,24 @@ def home_page():
 @login_required
 def query_user():
     if request.method == 'POST':
-        cuisine = request.form['cuisine']
-        diet = request.form['diet']
-        meal_type = request.form['meal_type']
+        cuisineType = request.form['cuisine']
+        health = request.form['diet']
+        mealType = request.form['meal_type']
 
-        session['cuisine'] = cuisine
-        session['diet'] = diet
-        session['meal_type'] = meal_type
+        session['cuisineType'] = cuisineType
+        session['health'] = health
+        session['mealType'] = mealType
         return redirect(url_for('index.find_recipes', offset=0))
     return render_template('main/recipequery.html')
 
 @bp.route('/findRecipes/<int:offset>')
 @login_required
 def find_recipes(offset):
-    userParams = {'cuisine': session.get('cuisine'), 'diet': session.get('diet'), 'type': session.get('meal_type'), 'offset': offset}
-    print(userParams)
+    userParams = {'cuisine': session.get('cuisineType'), 'diet': session.get('health'), 'type': session.get('mealType'), 'offset': offset}
+    
+    # Remove empty values from userParams
+    userParams = {k: v for k, v in userParams.items() if v}
+    
     recipes = get_recipes(userParams)
     if recipes == "No Recipes Found":
         flash('No results found!')
@@ -48,8 +51,8 @@ def find_recipes(offset):
 bp.route('/swipe/<action>/<int:recipe_id>')
 def swipe(action, recipe_id):
     # Add logic here to handle user's swipe (accept or reject)
-    # This will honestly be a simple averaging function, this is a job for backend
-    # Only acquire sweetness info when the user views more about the recipe (due to limits :)
+    # We'll make a preferences algorithm that's pretty good, neat, complicated so we can show off to Dr. Shin
+    # Only acquire more info when the user views more about the recipe (due to limits :)
     # For now, we'll just redirect to the home page
     return redirect(url_for('index'))
 
@@ -57,7 +60,7 @@ def swipe(action, recipe_id):
 @bp.route('/generate')
 def generate():
     offset = session.get('offset', 0)
-    offset += 100
+    offset += 20
     session['offset'] = offset
     return redirect(url_for('index'))
 
