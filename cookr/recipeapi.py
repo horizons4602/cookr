@@ -7,7 +7,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-APIKEY = os.getenv('SPOONACULAR_API_KEY')
+APIKEY_SPOONACULAR = os.getenv('SPOONACULAR_API_KEY')
 
 # Define Recipe Class
 class Recipe:
@@ -51,7 +51,7 @@ def get_recipes(params=None):
         
         recipesPerQuery = 100
         # Call API for Search Recipe
-        resultsQuery = requests.get('https://api.spoonacular.com/recipes/complexSearch?apiKey=' + APIKEY + '&number=' + str(recipesPerQuery), params=params).json()
+        resultsQuery = requests.get('https://api.spoonacular.com/recipes/complexSearch?apiKey=' + APIKEY_SPOONACULAR + '&number=' + str(recipesPerQuery), params=params).json()
         if 'code' in resultsQuery.keys():
             if resultsQuery['code'] != 200:
                 if resultsQuery['code'] == 402:
@@ -67,10 +67,10 @@ def get_recipes(params=None):
         recipesPerQuery = min(numResults, recipesPerQuery)
         # Create Bulk ID String
         bulkIds = str(resultsQuery['results'][0]['id'])
-        for recipe in range(1, recipesPerQuery):
+        for recipe in range(1, recipesPerQuery - 1):
             print(recipe)
             bulkIds += "," + str(resultsQuery['results'][recipe]['id'])
-        analyze_recipes(bulkIds, recipesPerQuery)
+        return analyze_recipes(bulkIds, recipesPerQuery)
 
 def limit(num):
      if num > 100:
@@ -79,7 +79,7 @@ def limit(num):
         return 0
 
 def analyze_recipes(bulkIds, recipesPerQuery):
-    recipesQuery = requests.get('https://api.spoonacular.com/recipes/informationBulk?' + 'ids=' + bulkIds + '&apiKey=' + APIKEY).json()
+    recipesQuery = requests.get('https://api.spoonacular.com/recipes/informationBulk?' + 'ids=' + bulkIds + '&apiKey=' + APIKEY_SPOONACULAR).json()
     # List of anaylyzed recipe information
     recipes = []
     for recipe in range (0, recipesPerQuery - 1):
@@ -109,7 +109,7 @@ def analyze_recipes(bulkIds, recipesPerQuery):
 
 def get_recipe_desc(recipe_id, params=None):
     # Call API for Flavor Scorings by Recipe ID
-    flavorScores = requests.get('https://api.spoonacular.com/recipes/' + str(id) + '/tasteWidget.json?apiKey=' + APIKEY, params=params).json()
+    flavorScores = requests.get('https://api.spoonacular.com/recipes/' + str(id) + '/tasteWidget.json?apiKey=' + APIKEY_SPOONACULAR, params=params).json()
 
     sweetness = limit(flavorScores['sweetness'])
     saltiness = limit(flavorScores['saltiness'])
@@ -120,9 +120,3 @@ def get_recipe_desc(recipe_id, params=None):
     spiciness = limit(flavorScores['spiciness'])
 
     return RecipeDesc(id, sweetness, saltiness, sourness, bitterness, savoriness, fattiness, spiciness)
-
-# Search for Vegan Dessert  
-payload = {'diet': 'vegan', 'type': 'dessert'}
-recipe1 = get_recipes(payload)
-print(recipe1)
-print(recipe1.image)
