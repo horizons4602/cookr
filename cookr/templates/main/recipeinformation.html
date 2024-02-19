@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+<body>
+    {% if recipes %}
+      {% for recipe in recipes %}
+        <div>
+          <h2>{{ recipe.title }}</h2>
+          <img src="{{ recipe.image }}" alt="{{ recipe.title }}">
+          <p><a href="{{ recipe.url }}" target="_blank">View Recipe</a></p>
+          <!-- Call JavaScript function to load more information -->
+          <button onclick="loadMoreInformation('{{ recipe }}')">See more information</button>
+        </div>
+      {% endfor %}
+      <script>
+        function loadMoreInformation(recipe) {
+          // Make an asynchronous request to the backend
+          fetch(`/get_more_information?recipeId=${recipeId}`)
+            .then(response => response.json())
+            .then(data => {
+              // Display the information in a popup or modal
+              alert(data.moreInformation); // Replace with your preferred method
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Automatically generate more recipes after the for loop
+        // button to continue searching 
+        document.write('<button onclick="window.location.href=\'/findRecipes/generate\'">Show me more recipes!</button>');
+      </script>
+    {% else %}
+      <div>
+          <h2>Sorry, no more recipes found!</h2>
+          <button onclick="window.location.href='/findRecipes'">Start a new search</button>
+      </div>
+    {% endif %}
+  </body>
