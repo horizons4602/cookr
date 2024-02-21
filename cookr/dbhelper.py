@@ -52,3 +52,5 @@ def get_single_recipe_from_id(recipe_id):
     ingredients_query = db.execute('SELECT * FROM ingredient WHERE recipe_id = ?', (recipe_id,)).fetchall()
     ingredients = [ingredient['name'] for ingredient in ingredients_query]
     recipe = Recipe(recipe_query['id'], recipe_query['selfHref'], recipe_query['image'], recipe_query['url'], recipe_query['title'], ingredients, recipe_query['calories'], recipe_query['totalWeight'], recipe_query['totalTime'])
+
+    return recipe

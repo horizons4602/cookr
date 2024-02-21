@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, session
+    Blueprint, flash, g, redirect, render_template, request, url_for, session, jsonify
 )
 from werkzeug.exceptions import abort
 
@@ -63,16 +63,32 @@ def find_recipes():
 # Reveal more information (to be called dynamically)
 @bp.route('/findRecipes/<int:recipeID>/information')
 def information(recipeID):
-    # Only acquire more info when the user views more about the recipe (due to limits :)
-
     # Get the recipe information
     recipe = get_single_recipe_from_id(recipeID)
-
     recipeTaste = get_recipe_desc(recipe)
-    
-    print(recipeTaste)
-    
-    return render_template('main/recipeinformation.html', recipe=recipe, recipeTaste=recipeTaste)
+
+    # COMPARE TASTE TO USER PREFERENCE HERE, TBD
+
+    # For AJAX requests
+    # Return JSON
+    return jsonify({
+        'recipe': {
+            'title': recipe.title,
+            'image': recipe.image,
+            'url': recipe.url,
+            # Add more fields as needed
+        },
+        'recipeTaste': {
+            'sweetness': recipeTaste.sweetness,
+            'saltiness': recipeTaste.saltiness,
+            'sourness': recipeTaste.sourness,
+            'bitterness': recipeTaste.bitterness,
+            'savoriness': recipeTaste.savoriness,
+            'fattiness': recipeTaste.fattiness,
+            'spiciness': recipeTaste.spiciness,
+        },
+        # Likely more fields for comparison to user tastes here (booleans)
+    })
 
 # Generate new recipes route
 @bp.route('/findRecipes/generate')

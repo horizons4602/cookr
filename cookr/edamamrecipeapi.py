@@ -88,8 +88,6 @@ def analyze_recipes(recipesQuery, recipesPerQuery):
         totalTime = float(recipesQuery["hits"][recipeIndex]["recipe"]['totalTime'])
         # Get additional nutritional information here, it's in the API call
 
-        #print(f"Recipe {recipeIndex}:\nTitle: {title}\nCalories: {calories}\nTotal Weight: {totalWeight}\nTotal Time: {totalTime}")
-
         # Here is where we take all the nutritional info and create our own algorithm for
         # "healthiness" based on user goals, weight, diet, etc.
 
@@ -135,7 +133,7 @@ def analyze_recipes(recipesQuery, recipesPerQuery):
                 for ingredient in ingredients:
                     cursor.execute(
                         "INSERT INTO ingredient (recipe_ID, name) VALUES (?, ?)",
-                        (ingredient, recipe_id),
+                        (recipe_id, ingredient),
                     )
                 
             except db.IntegrityError:
