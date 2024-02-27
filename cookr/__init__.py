@@ -1,12 +1,15 @@
 import os
 
 from flask import Flask
+from flask_apscheduler import APScheduler
+from cookr.dbhelper import recipe_ingredient_clean
 import logging
-
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    scheduler = APScheduler()
+    scheduler.init_app(app)
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'cookr.sqlite'),
@@ -28,11 +31,17 @@ def create_app(test_config=None):
     # a simple page that says hello
     @app.route('/hello')
     def hello():
-        return 'Hello, World!'
+        return 'Hello, Cookr :)'
     
     from . import db
     db.init_app(app)
 
+    # Delete expired recipes from "recipe" and "ingredient" tables
+    # Every 12 minutes
+    @scheduler.task('interval', id='clear_recipe_ingredient_records', minutes=15, misfire_grace_time=900)
+    def clear_recipe_ingredient_records():
+        recipe_ingredient_clean()
+        
     from . import auth
     app.register_blueprint(auth.bp)
 

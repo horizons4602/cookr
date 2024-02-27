@@ -1,12 +1,13 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, session
+    Blueprint, flash, g, redirect, render_template, request, url_for, session, jsonify
 )
 from werkzeug.exceptions import abort
-import logging
 
 from cookr.auth import login_required
 from cookr.db import get_db
-from cookr.recipeapi import get_recipes, get_recipe_desc
+from cookr.dbhelper import get_recipes_from_ids, get_single_recipe_from_id
+from cookr.edamamrecipeapi import get_recipes
+from cookr.recipeapi import get_recipe_desc
 
 bp = Blueprint('index', __name__)
 
@@ -20,51 +21,92 @@ def home_page():
 @login_required
 def query_user():
     if request.method == 'POST':
-        cuisine = request.form['cuisine']
-        diet = request.form['diet']
-        meal_type = request.form['meal_type']
+        cuisineType = request.form['cuisine']
+        health = request.form['diet']
+        mealType = request.form['meal_type']
 
-        session['cuisine'] = cuisine
-        session['diet'] = diet
-        session['meal_type'] = meal_type
-        return redirect(url_for('index.find_recipes', offset=0))
+        # Clear userParams from session
+        session.pop('userParams', None)
+        session.pop('next', None)
+
+        userParams = {'cuisineType': cuisineType, 'health': health, 'mealType': mealType}
+
+        # If userParam value is empty, remove it from the dictionary
+        userParams = {k: v for k, v in userParams.items() if v}
+
+        session['userParams'] = userParams
+
+        return redirect(url_for('index.find_recipes'))
     return render_template('main/recipequery.html')
 
-@bp.route('/findRecipes/<int:offset>')
+# Initial query of recipes, future queries will be handled by the generate route (if more recipes exist)
+@bp.route('/findRecipes/search')
 @login_required
-def find_recipes(offset):
-    userParams = {'cuisine': session.get('cuisine'), 'diet': session.get('diet'), 'type': session.get('meal_type'), 'offset': offset}
-    print(userParams)
-    recipes = get_recipes(userParams)
-    if recipes == "No Recipes Found":
-        flash('No results found!')
-    if recipes == "Out of Recipes":
-        flash('No more results found!')
-    if recipes == "Out of API Calls":
-        flash('Service Temporarily Down, Please Try Again Later')
-    return render_template('main/recipes.html', recipes=recipes, params=userParams)
+def find_recipes():
+    userParams = session.get('userParams', {})
+    try:
+        recipes, next = get_recipes(userParams, None)
+    except Exception as error:
+        # Out of recipes
+        print("An Exception Occured:", error)
+        recipes = None
+        next = None
 
-# Accept or Reject recipe route
-bp.route('/swipe/<action>/<int:recipe_id>')
-def swipe(action, recipe_id):
-    # Add logic here to handle user's swipe (accept or reject)
-    # This will honestly be a simple averaging function, this is a job for backend
-    # Only acquire sweetness info when the user views more about the recipe (due to limits :)
-    # For now, we'll just redirect to the home page
-    return redirect(url_for('index'))
+    recipe_ids = [recipe.id for recipe in recipes]
+
+    session['recipes_ids'] = recipe_ids
+    session['next'] = next
+    if recipes == None:
+        flash('No recipes found!')
+    return render_template('main/recipes.html', recipes=recipes)
+
+# Reveal more information (to be called dynamically)
+@bp.route('/findRecipes/<int:recipeID>/information')
+def information(recipeID):
+    # Get the recipe information
+    recipe = get_single_recipe_from_id(recipeID)
+    recipeTaste = get_recipe_desc(recipe)
+
+    # COMPARE TASTE TO USER PREFERENCE HERE, TBD
+
+    # For AJAX requests
+    # Return JSON
+    return jsonify({
+        'recipe': {
+            'title': recipe.title,
+            'image': recipe.image,
+            'url': recipe.url,
+            # Add more fields as needed
+        },
+        'recipeTaste': {
+            'sweetness': recipeTaste.sweetness,
+            'saltiness': recipeTaste.saltiness,
+            'sourness': recipeTaste.sourness,
+            'bitterness': recipeTaste.bitterness,
+            'savoriness': recipeTaste.savoriness,
+            'fattiness': recipeTaste.fattiness,
+            'spiciness': recipeTaste.spiciness,
+        },
+        # Likely more fields for comparison to user tastes here (booleans)
+    })
 
 # Generate new recipes route
-@bp.route('/generate')
+@bp.route('/findRecipes/generate')
 def generate():
-    offset = session.get('offset', 0)
-    offset += 100
-    session['offset'] = offset
-    return redirect(url_for('index'))
+    next = session['next']
+    try:
+        recipes, next = get_recipes(None, next)
+        session['next'] = next
 
-# Generate new recipes route
-@bp.route('/recipeTaste/<int:recipe_id>')
-def recipe_information(recipe_id):
-    get_recipe_desc(recipe_id)
+        # Store recipe.title
+        recipe_ids = [recipe.id for recipe in recipes]
+        
+        session['recipes_ids'] = recipe_ids
+    except:
+        # Out of recipes
+        recipes = None
+        next = None
+    return render_template('main/recipes.html', recipes=recipes)
 
 @bp.route('/saved')
 @login_required
