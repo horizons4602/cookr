@@ -128,6 +128,8 @@ def saved():
 
 @bp.route('/macros', methods=('GET', 'POST'))
 def macros(sum=sum):
+    global Calories
+    Calories = 0
     if request.method == 'POST':
         userWeight = request.form['userWeight']
         userSex = request.form['userSex']
@@ -138,9 +140,9 @@ def macros(sum=sum):
         error = None
         
         if userSex == "Male":
-            Calories = (66 + (6.23 * int(userWeight)) + (12.7 * int(userHeight)) - (6.8 * int(userAge))) * int(userActivityLevel)
+            Calories = (66 + (6.23 * int(userWeight)) + (12.7 * int(userHeight)) - (6.8 * int(userAge))) * float(userActivityLevel)
         else:
-            Calories = (655 + (4.35 * int(userWeight)) + (4.7 * int(userHeight)) - (4.7 * int(userAge))) * int(userActivityLevel)
+            Calories = (655 + (4.35 * int(userWeight)) + (4.7 * int(userHeight)) - (4.7 * int(userAge))) * float(userActivityLevel)
 
         userProtein = Calories / 4
         userCarbs = Calories / 4
@@ -169,4 +171,4 @@ def macros(sum=sum):
 
         flash(error)
 
-    return render_template('main/macros.html')
+    return render_template('main/macros.html', Calories = Calories)
