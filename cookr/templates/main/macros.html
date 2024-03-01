@@ -1,0 +1,28 @@
+<!-- main/recipequery.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Macros</h2>
+  <form method="post">
+    <label for="userWeight">What is your weight in lbs?</label>
+    <input type="float" name="userWeight"required>
+    <label for="userSex">What is your sex?</label>
+    <input type="text" name="userSex"required>
+    <label for="userHeight">What is your height in inches?</label>
+    <input type="float" name="userHeight"required>
+    <label for="userAge">What is your age?</label>
+    <input type="text" name="userAge"required>
+    <label for="userActivityLevel">Choose Activity Level</label>
+    <select name="userActivityLevel" id="userActivityLevel">
+        <option value="1.25">Sedentary</option>
+        <option value="1.375">Lightly Active</option>
+        <option value="1.55">Active </option>
+        <option value="1.725">Very Active</option>
+    </select>
+    
+    <button type="submit" value="maleCalories">Calculate</button>
+
+    <p name="maleCalories">Calories: {{ maleCalories }}</p>
+  
+{% endblock %}
