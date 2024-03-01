@@ -8,7 +8,11 @@
     <label for="userWeight">What is your weight in lbs?</label>
     <input type="float" name="userWeight"required>
     <label for="userSex">What is your sex?</label>
-    <input type="text" name="userSex"required>
+    <select name="userSex" id="userSex">
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+
     <label for="userHeight">What is your height in inches?</label>
     <input type="float" name="userHeight"required>
     <label for="userAge">What is your age?</label>
@@ -21,8 +25,8 @@
         <option value="1.725">Very Active</option>
     </select>
     
-    <button type="submit" value="maleCalories">Calculate</button>
+    <button type="submit" value="Calories">Calculate</button>
 
-    <p name="maleCalories">Calories: {{ maleCalories }}</p>
+    <p name="Calories">Calories: {{ Calories }}</p>
   
 {% endblock %}
