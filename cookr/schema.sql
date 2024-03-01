@@ -1,9 +1,9 @@
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS user_preference;
-DROP TABLE IF EXISTS user_health;
 DROP TABLE IF EXISTS saved_recipe;
 DROP TABLE IF EXISTS recipe;
 DROP TABLE IF EXISTS ingredient;
+DROP TABLE IF EXISTS macro_info;
 
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -22,47 +22,6 @@ CREATE TABLE user_preference (
   saving_user INTEGER NOT NULL,
   FOREIGN KEY (saving_user) REFERENCES user (id)
 );
-
-CREATE TABLE user_health (
-  alcohol-cocktail BOOLEAN NOT NULL,
-  alcohol-free BOOLEAN NOT NULL,
-  celery-free BOOLEAN NOT NULL,
-  crustacean-free BOOLEAN NOT NULL,
-  dairy-free BOOLEAN NOT NULL,
-  DASH BOOLEAN NOT NULL,
-  egg-free BOOLEAN NOT NULL,
-  fish-free BOOLEAN NOT NULL,
-  fodmap-free BOOLEAN NOT NULL,
-  gluten-free BOOLEAN NOT NULL,
-  immuno-supportive BOOLEAN NOT NULL,
-  keto-friendly BOOLEAN NOT NULL,
-  kidney-friendly BOOLEAN NOT NULL,
-  kosher BOOLEAN NOT NULL,
-  low-fat-abs BOOLEAN NOT NULL,
-  low-potassium BOOLEAN NOT NULL,
-  low-sugar BOOLEAN NOT NULL,
-  lupine-free BOOLEAN NOT NULL,
-  Mediterranean BOOLEAN NOT NULL,
-  mollusk-free BOOLEAN NOT NULL,
-  mustard-free BOOLEAN NOT NULL,
-  no-oil-added BOOLEAN NOT NULL,
-  paleo BOOLEAN NOT NULL,
-  peanut-free BOOLEAN NOT NULL,
-  pescatarian BOOLEAN NOT NULL,
-  pork-free BOOLEAN NOT NULL,
-  red-meat-free BOOLEAN NOT NULL,
-  sesame-free BOOLEAN NOT NULL,
-  shellfish-free BOOLEAN NOT NULL,
-  soy-free BOOLEAN NOT NULL,
-  sugar-conscious BOOLEAN NOT NULL,
-  sulfite-free BOOLEAN NOT NULL,
-  tree-nut-free BOOLEAN NOT NULL,
-  vegan BOOLEAN NOT NULL,
-  vegetarian BOOLEAN NOT NULL,
-  wheat-free BOOLEAN NOT NULL,
-  saving_user INTEGER NOT NULL,
-  FOREIGN KEY (saving_user) REFERENCES user (id)
-)
 
 CREATE TABLE recipe (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -88,6 +47,20 @@ CREATE TABLE saved_recipe (
   title TEXT NOT NULL,
   image TEXT,
   imageType TEXT,
+  saving_user INTEGER NOT NULL,
+  FOREIGN KEY (saving_user) REFERENCES user (id)
+);
+
+CREATE TABLE macro_info (
+  userWeight INTEGER TEXT NOT NULL,
+  userSex TEXT NOT NULL,
+  userHeight TEXT NOT NULL,
+  userAge INTEGER NOT NULL,
+  userActivityLevel TEXT NOT NULL,
+  userCalories INTEGER NOT NULL,
+  userProtein INTEGER NOT NULL,
+  userCarbs INTEGER NOT NULL,
+  userFat INTEGER NOT NULL,
   saving_user INTEGER NOT NULL,
   FOREIGN KEY (saving_user) REFERENCES user (id)
 );
