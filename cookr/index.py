@@ -128,19 +128,45 @@ def saved():
 
 @bp.route('/macros', methods=('GET', 'POST'))
 def macros(sum=sum):
-    global maleCalories
-    global femaleCalories
-    femaleCalories = 0
-    maleCalories = 0
     if request.method == 'POST':
         userWeight = request.form['userWeight']
         userSex = request.form['userSex']
         userHeight = request.form['userHeight']
         userAge = request.form['userAge']
         userActivityLevel = request.form['userActivityLevel']
-         
-        maleCalories = (66 + (6.23 * float(userWeight)) + (12.7 * float(userHeight)) - (6.8 * float(userAge))) * float(userActivityLevel)
-    
-        femaleCalories = 655 + (4.35 * float(userWeight)) + (4.7 * float(userHeight)) - (4.7 * float(userAge)) * float(userActivityLevel)
+        db = get_db()
+        error = None
+        
+        if userSex == "Male":
+            Calories = (66 + (6.23 * int(userWeight)) + (12.7 * int(userHeight)) - (6.8 * int(userAge))) * int(userActivityLevel)
+        else:
+            Calories = (655 + (4.35 * int(userWeight)) + (4.7 * int(userHeight)) - (4.7 * int(userAge))) * int(userActivityLevel)
 
-    return render_template('main/macros.html', maleCalories=maleCalories, femaleCalories=femaleCalories)
+        userProtein = Calories / 4
+        userCarbs = Calories / 4
+        userFat = Calories / 9
+        
+        if not userWeight:
+            error = 'userWeight is required.'
+        elif not userSex:
+            error = 'Sex is required.'
+        elif not userHeight:
+            error = 'Height is required'
+        elif not userAge:
+            error = 'Age is required'
+        elif not userActivityLevel:
+            error = 'Activity level is required'
+
+        if error is None:
+            try:
+                db.execute(
+                    "INSERT INTO macro_info (userWeight, userSex, userHeight, userAge, userActivityLevel, userCalories, userProtein, userCarbs, userFat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (userWeight, userSex, userHeight, userAge, userActivityLevel, Calories, userProtein, userCarbs, userFat),
+                ).fetchone()
+                db.commit()
+            except db.IntegrityError:
+                error = f"User {userWeight} is already registered."
+
+        flash(error)
+
+    return render_template('main/macros.html')
