@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, session, jsonify
+    Blueprint, flash, g, redirect, render_template, request, url_for, session
 )
 from werkzeug.exceptions import abort
 
@@ -8,6 +8,7 @@ from cookr.db import get_db
 from cookr.dbhelper import get_recipes_from_ids, get_single_recipe_from_id
 from cookr.edamamrecipeapi import get_recipes
 from cookr.recipeapi import get_recipe_desc
+
 
 bp = Blueprint('index', __name__)
 
@@ -63,32 +64,16 @@ def find_recipes():
 # Reveal more information (to be called dynamically)
 @bp.route('/findRecipes/<int:recipeID>/information')
 def information(recipeID):
+    # Only acquire more info when the user views more about the recipe (due to limits :)
+
     # Get the recipe information
     recipe = get_single_recipe_from_id(recipeID)
+
     recipeTaste = get_recipe_desc(recipe)
-
-    # COMPARE TASTE TO USER PREFERENCE HERE, TBD
-
-    # For AJAX requests
-    # Return JSON
-    return jsonify({
-        'recipe': {
-            'title': recipe.title,
-            'image': recipe.image,
-            'url': recipe.url,
-            # Add more fields as needed
-        },
-        'recipeTaste': {
-            'sweetness': recipeTaste.sweetness,
-            'saltiness': recipeTaste.saltiness,
-            'sourness': recipeTaste.sourness,
-            'bitterness': recipeTaste.bitterness,
-            'savoriness': recipeTaste.savoriness,
-            'fattiness': recipeTaste.fattiness,
-            'spiciness': recipeTaste.spiciness,
-        },
-        # Likely more fields for comparison to user tastes here (booleans)
-    })
+    
+    print(recipeTaste)
+    
+    return render_template('main/recipeinformation.html', recipe=recipe, recipeTaste=recipeTaste)
 
 # Generate new recipes route
 @bp.route('/findRecipes/generate')
@@ -140,3 +125,22 @@ def saved():
     ).fetchall()
 
     return render_template('main/saved.html', recipes=savedRecipes, page=page)
+
+@bp.route('/macros', methods=('GET', 'POST'))
+def macros(sum=sum):
+    global maleCalories
+    global femaleCalories
+    femaleCalories = 0
+    maleCalories = 0
+    if request.method == 'POST':
+        userWeight = request.form['userWeight']
+        userSex = request.form['userSex']
+        userHeight = request.form['userHeight']
+        userAge = request.form['userAge']
+        userActivityLevel = request.form['userActivityLevel']
+         
+        maleCalories = (66 + (6.23 * float(userWeight)) + (12.7 * float(userHeight)) - (6.8 * float(userAge))) * float(userActivityLevel)
+    
+        femaleCalories = 655 + (4.35 * float(userWeight)) + (4.7 * float(userHeight)) - (4.7 * float(userAge)) * float(userActivityLevel)
+
+    return render_template('main/macros.html', maleCalories=maleCalories, femaleCalories=femaleCalories)
