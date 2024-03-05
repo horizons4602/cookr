@@ -14,7 +14,7 @@ APPID_EDAMAM = os.getenv('EDAMAM_APP_ID')
 
 # Define Recipe Class
 class Recipe:
-    def __init__(self, id, selfHref, image, url, title, ingredients, calories, totalWeight, totalTime):
+    def __init__(self, id, selfHref, image, url, title, ingredients, calories, totalWeight, totalTime, fats, carbohydrates, protein, cholesterol):
         self.id = id # Database ID, not from API
         self.selfHref = selfHref
         self.image = image
@@ -24,9 +24,12 @@ class Recipe:
         self.calories = calories
         self.totalWeight = totalWeight
         self.totalTime = totalTime
-    
+        self.fats = None
+        self.carbohydrates= None
+        self.protein = None
+
     def __str__(self):
-        return f"ID: {self.id}\n selfHref: {self.selfHref}\n Image {self.image}\nURL: {self.url}\nTitle: {self.title}\nIngredients: {self.ingredients}\nCalories: {self.calories}\nTotal Weight: {self.totalWeight}\nTotal Time: {self.totalTime}"
+        return f"ID: {self.id}\n selfHref: {self.selfHref}\n Image {self.image}\nURL: {self.url}\nTitle: {self.title}\nIngredients: {self.ingredients}\nCalories: {self.calories}\nFats: {self.fats}\Carbohydrates: {self.carbohydrates}\nProtein: {self.protein}\nTotal Weight: {self.totalWeight}\nTotal Time: {self.totalTime}"
 
 # Get Recipe From API and return Recipe Object (Default params are for random search)
 def get_recipes(params=None, next=None):
@@ -86,10 +89,30 @@ def analyze_recipes(recipesQuery, recipesPerQuery):
         calories = recipesQuery["hits"][recipeIndex]["recipe"]['calories']
         totalWeight = recipesQuery["hits"][recipeIndex]["recipe"]['totalWeight']
         totalTime = float(recipesQuery["hits"][recipeIndex]["recipe"]['totalTime'])
+        protein = calories/4      #placeholder equations
+        carbohydrates = calories/4        #placeholder equations
+        fats = calories/9           #placeholder equations
+
+
+
         # Get additional nutritional information here, it's in the API call
 
         # Here is where we take all the nutritional info and create our own algorithm for
         # "healthiness" based on user goals, weight, diet, etc.
+
+        """
+        Example to call function healthiness
+
+        user _ goals = " " #what is the users goal
+        user_weight =       #in kg
+        food_data = {
+            title: {'calories' : calories, 'protein': protein}
+        }
+        food_item = title
+        result = healthiness(food_data[food_item], user_goals, user_weight)
+        print(f"{food_item} is {result}.")
+        """
+
 
         error = None
 
@@ -120,7 +143,7 @@ def analyze_recipes(recipesQuery, recipesPerQuery):
             try:
                 cursor = db.cursor()
                 cursor.execute(
-                    "INSERT INTO recipe (creationTime, selfHref, image, url, title, calories, totalWeight, totalTime) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    "INSERT INTO recipe (creationTime, selfHref, image, url, title, calories,protein, carbohydrates,fats totalWeight, totalTime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     (current_datetime, selfHref, image, url, title, calories, totalWeight, totalTime),
                 )
 
@@ -148,3 +171,26 @@ def analyze_recipes(recipesQuery, recipesPerQuery):
     db.commit()
     #Create and Return Recipe List, Next Link
     return recipes, next
+
+""" simpoe algorithm that determines if food is healthy or not
+
+def healthiness(food_item, user_goals, user_weight):
+    #get calores and protein
+    calories = food_item['calories']
+    protein = food_item['protein']
+    
+    #get what user wants
+    if user_goals == "weight_loss":
+        calories_score = 100 - (calories/user_weight) * 10
+    else:
+        calories_score = calories / user_weight * 10
+    
+    pscore = protein * 5 #protein score
+
+    totalScore = (calories_score + pscore) / 2 #get avg of targeted calories and protein
+
+    if totalScore >= 70:
+        return "Healthy"
+    else:
+        return "Not Healthy"
+"""
