@@ -6,23 +6,12 @@ import requests
 import os
 import json
 from dotenv import load_dotenv
+from cookr.recipeclasses import RecipeDesc
 load_dotenv()
 
 from cookr.edamamrecipeapi import Recipe
 
 APIKEY_SPOONACULAR = os.getenv('SPOONACULAR_API_KEY')
-
-class RecipeDesc:
-        def __init__(self, sweetness, saltiness, sourness, bitterness, savoriness, fattiness, spiciness):
-            self.sweetness = sweetness
-            self.saltiness = saltiness
-            self.sourness = sourness
-            self.bitterness = bitterness
-            self.savoriness = savoriness
-            self.fattiness = fattiness
-            self.spiciness = spiciness
-        def __str__(self):
-            return f"Sweetness: {self.sweetness}\nSaltiness: {self.saltiness}\nSourness: {self.sourness}\nBitterness: {self.bitterness}\nSavouriness: {self.savoriness}\nFattiness: {self.fattiness}\nSpiciness: {self.spiciness}"
 
 def RecipeEncoder(recipe):
     recipe_data = {

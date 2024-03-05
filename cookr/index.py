@@ -43,9 +43,10 @@ def query_user():
 @bp.route('/findRecipes/search')
 @login_required
 def find_recipes():
+    user_id = session['user_id']
     userParams = session.get('userParams', {})
     try:
-        recipes, next = get_recipes(userParams, None)
+        recipes, next = get_recipes(userParams, None, user_id)
     except Exception as error:
         # Out of recipes
         print("An Exception Occured:", error)
@@ -93,9 +94,10 @@ def information(recipeID):
 # Generate new recipes route
 @bp.route('/findRecipes/generate')
 def generate():
+    user_id = session['user_id']
     next = session['next']
     try:
-        recipes, next = get_recipes(None, next)
+        recipes, next = get_recipes(None, next, user_id)
         session['next'] = next
 
         # Store recipe.title
