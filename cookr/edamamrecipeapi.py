@@ -16,6 +16,7 @@ APPID_EDAMAM = os.getenv('EDAMAM_APP_ID')
 
 # Get Recipe From API and return Recipe Object (Default params are for random search)
 def get_recipes(params=None, next=None, user_id=None):
+
         # Default recipes that can be obtained per API query
         recipesPerQuery = 20
 
@@ -24,20 +25,17 @@ def get_recipes(params=None, next=None, user_id=None):
         appAuthParams = "&app_id=" + APPID_EDAMAM
         keyAuthParams = "&app_key=" + APIKEY_EDAMAM
 
-        # Get health restrictions
-        dietaryRestrictions = get_user_health_restrictions(user_id)
-        dietaryRestrictionsParam = {key: value for key, value in dietaryRestrictions.items() if value}
-        params.update(dietaryRestrictionsParam)
-
-
-        print(f"User ID: {user_id}")
-        print(f"Params: {dietaryRestrictions}")
-
-        if next == None:
-            response = requests.get('https://api.edamam.com/api/recipes/v2' + defaultParams + appAuthParams +
-                                        keyAuthParams, params=params)
+        # Continue Existing Query
+        if next != None:
+            response = requests.get(next)
         else:
-            response = requests.get(next + keyAuthParams)
+            # Get health restrictions
+            dietaryRestrictions = get_user_health_restrictions(user_id)
+            dietaryRestrictionsParam = {key: True for key, value in dietaryRestrictions.items() if value}
+            params.update(dietaryRestrictionsParam)
+
+            response = requests.get('https://api.edamam.com/api/recipes/v2' + defaultParams + appAuthParams +
+                                    keyAuthParams, params=params)
 
         # Check for errors
         if response.status_code == 200:

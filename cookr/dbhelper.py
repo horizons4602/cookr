@@ -66,8 +66,9 @@ def get_user_health_restrictions(user_id):
 
     if user_diet_info:
         for attribute, boolValue in zip(attributes, user_diet_info):   
-            user_health[attribute] = boolValue
+            if attribute != "saving_user":
+                user_health[attribute] = boolValue
     else: 
-        user_health = {attribute: False for attribute in attributes}
+        user_health = {attribute: False for attribute in attributes if attribute != "saving_user"}
 
     return user_health
