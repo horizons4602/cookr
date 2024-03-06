@@ -7,29 +7,16 @@ import os
 from datetime import datetime
 from dotenv import load_dotenv
 from cookr.db import get_db
+from cookr.dbhelper import get_user_health_restrictions
+from cookr.recipeclasses import Recipe
 load_dotenv()
 
 APIKEY_EDAMAM = os.getenv('EDAMAM_API_KEY')
 APPID_EDAMAM = os.getenv('EDAMAM_APP_ID')
 
-# Define Recipe Class
-class Recipe:
-    def __init__(self, id, selfHref, image, url, title, ingredients, calories, totalWeight, totalTime):
-        self.id = id # Database ID, not from API
-        self.selfHref = selfHref
-        self.image = image
-        self.url = url
-        self.title = title
-        self.ingredients = ingredients
-        self.calories = calories
-        self.totalWeight = totalWeight
-        self.totalTime = totalTime
-    
-    def __str__(self):
-        return f"ID: {self.id}\n selfHref: {self.selfHref}\n Image {self.image}\nURL: {self.url}\nTitle: {self.title}\nIngredients: {self.ingredients}\nCalories: {self.calories}\nTotal Weight: {self.totalWeight}\nTotal Time: {self.totalTime}"
-
 # Get Recipe From API and return Recipe Object (Default params are for random search)
-def get_recipes(params=None, next=None):
+def get_recipes(params=None, next=None, user_id=None):
+
         # Default recipes that can be obtained per API query
         recipesPerQuery = 20
 
@@ -38,13 +25,17 @@ def get_recipes(params=None, next=None):
         appAuthParams = "&app_id=" + APPID_EDAMAM
         keyAuthParams = "&app_key=" + APIKEY_EDAMAM
 
-        # LOGIC TO BE ADDED TO SEARCH USER'S DIETARY/HEALTH RESTRICTION SCHEMA, To be added
-
-        if next == None:
-            response = requests.get('https://api.edamam.com/api/recipes/v2' + defaultParams + appAuthParams +
-                                        keyAuthParams, params=params)
+        # Continue Existing Query
+        if next != None:
+            response = requests.get(next)
         else:
-            response = requests.get(next + keyAuthParams)
+            # Get health restrictions
+            dietaryRestrictions = get_user_health_restrictions(user_id)
+            dietaryRestrictionsParam = {key: True for key, value in dietaryRestrictions.items() if value}
+            params.update(dietaryRestrictionsParam)
+
+            response = requests.get('https://api.edamam.com/api/recipes/v2' + defaultParams + appAuthParams +
+                                    keyAuthParams, params=params)
 
         # Check for errors
         if response.status_code == 200:
@@ -135,7 +126,7 @@ def analyze_recipes(recipesQuery, recipesPerQuery):
                 for ingredient in ingredients:
                     cursor.execute(
                         "INSERT INTO ingredient (recipe_ID, name) VALUES (?, ?)",
-                        (ingredient, recipe_id),
+                        (recipe_id, ingredient),
                     )
                 
             except db.IntegrityError:

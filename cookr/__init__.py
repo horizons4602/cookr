@@ -8,6 +8,8 @@ import logging
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    # Configure Flask logging
+    app.logger.setLevel(logging.DEBUG)  # Set to ERROR in production
     scheduler = APScheduler()
     scheduler.init_app(app)
     app.config.from_mapping(
@@ -40,10 +42,17 @@ def create_app(test_config=None):
     # Every 12 minutes
     @scheduler.task('interval', id='clear_recipe_ingredient_records', minutes=15, misfire_grace_time=900)
     def clear_recipe_ingredient_records():
-        recipe_ingredient_clean()
+        try:
+            recipe_ingredient_clean()
+        except Exception as e:
+            app.logger.error('An Exception Occured: %s', e)
+            return "An error occured", 500
         
     from . import auth
     app.register_blueprint(auth.bp)
+
+    from . import settings
+    app.register_blueprint(settings.bp)
 
     from . import index
     app.register_blueprint(index.bp)
