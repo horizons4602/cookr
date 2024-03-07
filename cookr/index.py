@@ -127,9 +127,8 @@ def saved():
     return render_template('main/saved.html', recipes=savedRecipes, page=page)
 
 @bp.route('/macros', methods=('GET', 'POST'))
-def macros(sum=sum):
-    global Calories
-    Calories = 0
+@login_required
+def macros():
     if request.method == 'POST':
         userWeight = request.form['userWeight']
         userSex = request.form['userSex']
@@ -171,4 +170,4 @@ def macros(sum=sum):
 
         flash(error)
 
-    return render_template('main/macros.html', Calories = Calories)
+    return render_template('main/macros.html')
