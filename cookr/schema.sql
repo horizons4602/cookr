@@ -84,7 +84,9 @@ CREATE TABLE recipe (
   title TEXT NOT NULL,
   calories FLOAT NOT NULL,
   totalWeight FLOAT NOT NULL,
-  totalTime FLOAT NOT NULL
+  totalTime FLOAT NOT NULL,
+  saving_user INTEGER NOT NULL,
+  FOREIGN KEY (saving_user) REFERENCES user (id)
 );
 
 CREATE TABLE ingredient (

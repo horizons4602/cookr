@@ -115,7 +115,6 @@ def dietsettingssubmit():
                 ))
 
             db.commit()
-            print(user_diet_info)
         except db.IntegrityError as e:
             error = f"Database Error: Couldn't {context} preferences for user {user_id} with the dietary options: {dietary_options}. Error: {e}"
             print(error)
