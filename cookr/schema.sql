@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS user_health;
 DROP TABLE IF EXISTS saved_recipe;
 DROP TABLE IF EXISTS recipe;
 DROP TABLE IF EXISTS ingredient;
+DROP TABLE IF EXISTS macro_info;
 
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -101,6 +102,20 @@ CREATE TABLE saved_recipe (
   title TEXT NOT NULL,
   image TEXT,
   imageType TEXT,
+  saving_user INTEGER NOT NULL,
+  FOREIGN KEY (saving_user) REFERENCES user (id)
+);
+
+CREATE TABLE macro_info (
+  userWeight INTEGER TEXT NOT NULL,
+  userSex TEXT NOT NULL,
+  userHeight TEXT NOT NULL,
+  userAge INTEGER NOT NULL,
+  userActivityLevel TEXT NOT NULL,
+  userCalories INTEGER NOT NULL,
+  userProtein INTEGER NOT NULL,
+  userCarbs INTEGER NOT NULL,
+  userFat INTEGER NOT NULL,
   saving_user INTEGER NOT NULL,
   FOREIGN KEY (saving_user) REFERENCES user (id)
 );
