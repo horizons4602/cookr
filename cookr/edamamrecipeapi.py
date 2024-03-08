@@ -7,44 +7,31 @@ import os
 from datetime import datetime
 from dotenv import load_dotenv
 from cookr.db import get_db
+from cookr.dbhelper import get_user_health_restrictions, insert_recipe_cache
+from cookr.recipeclasses import Recipe
 load_dotenv()
 
 APIKEY_EDAMAM = os.getenv('EDAMAM_API_KEY')
 APPID_EDAMAM = os.getenv('EDAMAM_APP_ID')
 
-# Define Recipe Class
-class Recipe:
-    def __init__(self, id, selfHref, image, url, title, ingredients, calories, totalWeight, totalTime):
-        self.id = id # Database ID, not from API
-        self.selfHref = selfHref
-        self.image = image
-        self.url = url
-        self.title = title
-        self.ingredients = ingredients
-        self.calories = calories
-        self.totalWeight = totalWeight
-        self.totalTime = totalTime
-    
-    def __str__(self):
-        return f"ID: {self.id}\n selfHref: {self.selfHref}\n Image {self.image}\nURL: {self.url}\nTitle: {self.title}\nIngredients: {self.ingredients}\nCalories: {self.calories}\nTotal Weight: {self.totalWeight}\nTotal Time: {self.totalTime}"
-
 # Get Recipe From API and return Recipe Object (Default params are for random search)
-def get_recipes(params=None, next=None):
+def get_recipes(params=None, user_id=None):
+
         # Default recipes that can be obtained per API query
         recipesPerQuery = 20
 
         # Default params
-        defaultParams = "?type=public"
+        defaultParams = "?type=public&random=true"
         appAuthParams = "&app_id=" + APPID_EDAMAM
         keyAuthParams = "&app_key=" + APIKEY_EDAMAM
 
-        # LOGIC TO BE ADDED TO SEARCH USER'S DIETARY/HEALTH RESTRICTION SCHEMA, To be added
+        # Get health restrictions
+        dietaryRestrictions = get_user_health_restrictions(user_id)
+        dietaryRestrictionsParam = {key: True for key, value in dietaryRestrictions.items() if value}
+        params.update(dietaryRestrictionsParam)
 
-        if next == None:
-            response = requests.get('https://api.edamam.com/api/recipes/v2' + defaultParams + appAuthParams +
-                                        keyAuthParams, params=params)
-        else:
-            response = requests.get(next + keyAuthParams)
+        response = requests.get('https://api.edamam.com/api/recipes/v2' + defaultParams + appAuthParams +
+                                keyAuthParams, params=params)
 
         # Check for errors
         if response.status_code == 200:
@@ -57,18 +44,12 @@ def get_recipes(params=None, next=None):
             
             # For when there are less recipes than searched for
             recipesPerQuery = min(numResults, recipesPerQuery)
-            return analyze_recipes(resultsQuery, recipesPerQuery)
+            return analyze_recipes(resultsQuery, recipesPerQuery, user_id)
         else:
             print(f"Error: {response.status_code}")
             print(response.text)
      
-def analyze_recipes(recipesQuery, recipesPerQuery):
-    # Next page
-    try:
-        next = recipesQuery["_links"]["next"]["href"]
-    except:
-        # Check for "None" recipes in caller
-        return None, None
+def analyze_recipes(recipesQuery, recipesPerQuery, user_id):
     
     # List of anaylyzed recipe information
     recipes = []
@@ -88,11 +69,7 @@ def analyze_recipes(recipesQuery, recipesPerQuery):
         totalTime = float(recipesQuery["hits"][recipeIndex]["recipe"]['totalTime'])
         # Get additional nutritional information here, it's in the API call
 
-        # Here is where we take all the nutritional info and create our own algorithm for
-        # "healthiness" based on user goals, weight, diet, etc.
-
         error = None
-
         # Check for required fields (probably a better way to do this with list comprehension)
         if selfHref is None:
             error = 'selfHref is required.'
@@ -113,38 +90,23 @@ def analyze_recipes(recipesQuery, recipesPerQuery):
         if error is not None:
             continue
 
-        # Get current time and date, formatted for DATETIME type
-        current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-        if error is None:
-            try:
-                cursor = db.cursor()
-                cursor.execute(
-                    "INSERT INTO recipe (creationTime, selfHref, image, url, title, calories, totalWeight, totalTime) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                    (current_datetime, selfHref, image, url, title, calories, totalWeight, totalTime),
-                )
-
-                # Get the last inserted row's id
-                recipe_id = cursor.lastrowid
-
-                # Database ID for recipe object
-                id = recipe_id
-
-                for ingredient in ingredients:
-                    cursor.execute(
-                        "INSERT INTO ingredient (recipe_ID, name) VALUES (?, ?)",
-                        (recipe_id, ingredient),
-                    )
-                
-            except db.IntegrityError:
-                # Should not occur, but just in case ¯\_(ツ)_/¯ 
-                error = f"Database Error: Recipe {recipe} could not be inserted into Database."
-                print(error)
-        
-        recipe = Recipe(id, selfHref, image, url, title, ingredients, calories, totalWeight, totalTime)
-        recipes.append(recipe)
+        # If recipe already seen by user, skip to next recipe
+        existing_recipe = db.execute("SELECT title FROM recipe WHERE title = ? AND saving_user = ?", (title, user_id)).fetchone()
+        if existing_recipe is None:
+            if error is None:
+                try:
+                    caching_recipe = recipe = Recipe(id=None, selfHref=selfHref, image=image, url=url, title=title, ingredients=ingredients, calories=calories, 
+                                                  totalWeight=totalWeight, totalTime=totalTime)
+                    id = insert_recipe_cache(caching_recipe, user_id)
+                    recipe = Recipe(id, selfHref, image, url, title, ingredients, calories, totalWeight, totalTime)
+                except Exception as e:
+                    # Should not occur, but just in case ¯\_(ツ)_/¯ 
+                    error = f"Error caching recipe: {recipe.title}, {e}"
+                    print(e)
+            recipes.append(recipe)
+        else:
+            continue
 
 
-    db.commit()
-    #Create and Return Recipe List, Next Link
-    return recipes, next
+    #Create and Return Recipe List
+    return recipes
