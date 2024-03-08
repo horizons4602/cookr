@@ -1,4 +1,4 @@
-<!-- templates/index.html -->
+<!-- templates/recpies.html, for browsing displayed recipe results -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -50,6 +50,11 @@
     
             var tasteSweetness = response.recipeTaste.sweetness;
             var tasteSaltiness = response.recipeTaste.saltiness;
+            var tasteSourness = response.recipeTaste.sourness;
+            var tasteBitterness = response.recipeTaste.bitterness;
+            var tasteSavoriness = response.recipeTaste.savoriness;
+            var tasteFattiness = response.recipeTaste.fattiness;
+            var tasteSpiciness = response.recipeTaste.spiciness;
             // ... extract other taste properties
     
             // Construct HTML content
@@ -60,6 +65,11 @@
               <h4>Taste Information:</h4>
               <p>Sweetness: ${tasteSweetness}</p>
               <p>Saltiness: ${tasteSaltiness}</p>
+              <p>Sourness: ${tasteSourness}</p>
+              <p>Bitterness: ${tasteBitterness}</p>
+              <p>Savoriness: ${tasteSavoriness}</p>
+              <p>Fattiness: ${tasteFattiness}</p>
+              <p>Spiciness: ${tasteSpiciness}</p>
               <!-- Add more taste properties as needed -->
     
               <!-- You can customize the HTML structure based on your requirements -->
@@ -75,7 +85,7 @@
       });
     </script>    
     <script>
-        document.write('<button onclick="window.location.href=\'/findRecipes/generate\'">Show me more recipes!</button>');
+        document.write('<button onclick="window.location.href=\'/findRecipes/search\'">Show me more recipes!</button>');
     </script>
   {% else %}
     <div>
