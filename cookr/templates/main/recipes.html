@@ -47,6 +47,10 @@
             var recipeTitle = response.recipe.title;
             var recipeImage = response.recipe.image;
             var recipeURL = response.recipe.url;
+            var recipeIngredients = response.recipe.ingredients; // TBA
+            // Recipe instructions scraping results TBA
+            var recipeTime = response.recipe.totalTime;
+            var recipeWeight = response.recipe.totalWeight;
     
             var tasteSweetness = response.recipeTaste.sweetness;
             var tasteSaltiness = response.recipeTaste.saltiness;
@@ -55,7 +59,23 @@
             var tasteSavoriness = response.recipeTaste.savoriness;
             var tasteFattiness = response.recipeTaste.fattiness;
             var tasteSpiciness = response.recipeTaste.spiciness;
-            // ... extract other taste properties
+            
+            // Recommendations
+            var recommendedSweetness = response.recipeRecommendations.sweetness;
+            var recommendedSaltiness = response.recipeRecommendations.saltiness;
+            var recommendedSourness = response.recipeRecommendations.sourness;
+            var recommendedBitterness = response.recipeRecommendations.bitterness;
+            var recommendedSavoriness = response.recipeRecommendations.savoriness;
+            var recommendedFattiness = response.recipeRecommendations.fattiness;
+            var recommendedSpiciness = response.recipeRecommendations.spiciness;
+
+            // Daily Nutrition Information for this recipe
+            var dailyCalories = response.recipeRecommendations.calories;
+            var dailyProtein = response.recipeRecommendations.protein;
+            var dailyCarbs = response.recipeRecommendations.carbs;
+            var dailyFat = response.recipeRecommendations.fat;
+            var dailySugar = response.recipeRecommendations.sugar; // Added sugar
+            var dailySodium = response.recipeRecommendations.sodium;
     
             // Construct HTML content
             var htmlContent = `
@@ -70,9 +90,22 @@
               <p>Savoriness: ${tasteSavoriness}</p>
               <p>Fattiness: ${tasteFattiness}</p>
               <p>Spiciness: ${tasteSpiciness}</p>
-              <!-- Add more taste properties as needed -->
-    
-              <!-- You can customize the HTML structure based on your requirements -->
+              <h4>Recommended Taste Information:</h4>
+              <p>Sweetness: ${recommendedSweetness}</p>
+              <p>Saltiness: ${recommendedSaltiness}</p>
+              <p>Sourness: ${recommendedSourness}</p>
+              <p>Bitterness: ${recommendedBitterness}</p>
+              <p>Savoriness: ${recommendedSavoriness}</p>
+              <p>Fattiness: ${recommendedFattiness}</p>
+              <p>Spiciness: ${recommendedSpiciness}</p>
+              <h4>Daily Nutrition Information:</h4>
+              <p>Calories: ${dailyCalories}</p>
+              <p>Protein: ${dailyProtein}</p>
+              <p>Carbs: ${dailyCarbs}</p>
+              <p>Fat: ${dailyFat}</p>
+              <p>Sugar: ${dailySugar}</p>
+              <p>Sodium: ${dailySodium}</p>
+  
             `;
     
             // Update the container with the constructed HTML

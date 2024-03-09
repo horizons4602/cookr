@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, session
+    Blueprint, flash, g, redirect, render_template, request, url_for, session, jsonify
 )
 from werkzeug.exceptions import abort
 
@@ -8,8 +8,8 @@ from cookr.db import get_db
 from cookr.dbhelper import get_recipes_from_ids, get_single_recipe_from_id
 from cookr.edamamrecipeapi import get_recipes
 from cookr.recipeapi import get_recipe_desc
-from cookr.recipeclasses import Recipe
-
+from cookr.recipeclasses import Recipe, RecipeRecommendation
+from cookr.preference import update_preferences, recommendation
 
 bp = Blueprint('index', __name__)
 
@@ -63,24 +63,63 @@ def find_recipes():
 # Reveal more information (AJAX)
 @bp.route('/findRecipes/<int:recipeID>/information')
 def information(recipeID):
-    # Only acquire more info when the user views more about the recipe (due to limits :)
+    user_id = session['user_id']
+    error = None
 
-    # Get the recipe information
     try:
         recipe = get_single_recipe_from_id(recipeID)
-    except:
-        flash('Session Expired')
-    try: 
         recipeTaste = get_recipe_desc(recipe)
-    except:
-        result = "Unable to get recipe description currently."
-        return result
+        recipeRecommendations = recommendation(user_id, recipeTaste, recipe)
+    except Exception as e:
+        error = str(e)
 
-    recipeTaste = get_recipe_desc(recipe)
-    
-    print(recipeTaste)
-    
-    return render_template('main/recipeinformation.html', recipe=recipe, recipeTaste=recipeTaste)
+    if error is not None:
+        return jsonify({'error': error}), 500
+
+    # Construct the response data
+    response_data = {
+        'recipe': {
+            'title': recipe.title,
+            'image': recipe.image,
+            'url': recipe.url,
+            'totalTime': recipe.totalTime,
+            'totalWeight': recipe.totalWeight,
+            'calories': recipe.calories,
+            'protein': recipe.protein,
+            'carbs': recipe.carbs,
+            'fat': recipe.fat,
+            'sugar': recipe.sugar,
+            'sodium': recipe.sodium
+        },
+        'recipeTaste': {
+            'sweetness': recipeTaste.sweetness,
+            'saltiness': recipeTaste.saltiness,
+            'sourness': recipeTaste.sourness,
+            'bitterness': recipeTaste.bitterness,
+            'savoriness': recipeTaste.savoriness,
+            'fattiness': recipeTaste.fattiness,
+            'spiciness': recipeTaste.spiciness
+        },
+        'recipeRecommendations': {
+            # Booleans for recommendations
+            'sweetness': recipeRecommendations.sweetness,
+            'saltiness': recipeRecommendations.saltiness,
+            'sourness': recipeRecommendations.sourness,
+            'bitterness': recipeRecommendations.bitterness,
+            'savoriness': recipeRecommendations.savoriness,
+            'fattiness': recipeRecommendations.fattiness,
+            'spiciness': recipeRecommendations.spiciness,
+            # Daily percent intake
+            'calories': recipeRecommendations.calories,
+            'protein': recipeRecommendations.protein,
+            'carbs': recipeRecommendations.carbs,
+            'fat': recipeRecommendations.fat,
+            'sugar': recipeRecommendations.sugar,
+            'sodium': recipeRecommendations.sodium
+        }
+    }
+
+    return jsonify(response_data)
 
 @bp.route('/saved')
 @login_required
@@ -114,49 +153,3 @@ def saved():
     ).fetchall()
 
     return render_template('main/saved.html', recipes=savedRecipes, page=page)
-
-@bp.route('/macros', methods=('GET', 'POST'))
-@login_required
-def macros():
-    if request.method == 'POST':
-        userWeight = request.form['userWeight']
-        userSex = request.form['userSex']
-        userHeight = request.form['userHeight']
-        userAge = request.form['userAge']
-        userActivityLevel = request.form['userActivityLevel']
-        db = get_db()
-        error = None
-        
-        if userSex == "Male":
-            Calories = (66 + (6.23 * int(userWeight)) + (12.7 * int(userHeight)) - (6.8 * int(userAge))) * float(userActivityLevel)
-        else:
-            Calories = (655 + (4.35 * int(userWeight)) + (4.7 * int(userHeight)) - (4.7 * int(userAge))) * float(userActivityLevel)
-
-        userProtein = Calories / 4
-        userCarbs = Calories / 4
-        userFat = Calories / 9
-        
-        if not userWeight:
-            error = 'userWeight is required.'
-        elif not userSex:
-            error = 'Sex is required.'
-        elif not userHeight:
-            error = 'Height is required'
-        elif not userAge:
-            error = 'Age is required'
-        elif not userActivityLevel:
-            error = 'Activity level is required'
-
-        if error is None:
-            try:
-                db.execute(
-                    "INSERT INTO macro_info (userWeight, userSex, userHeight, userAge, userActivityLevel, userCalories, userProtein, userCarbs, userFat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    (userWeight, userSex, userHeight, userAge, userActivityLevel, Calories, userProtein, userCarbs, userFat),
-                ).fetchone()
-                db.commit()
-            except db.IntegrityError:
-                error = f"User {userWeight} is already registered."
-
-        flash(error)
-
-    return render_template('main/macros.html')
