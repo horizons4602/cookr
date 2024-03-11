@@ -8,6 +8,8 @@ import logging
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    # Configure Flask logging
+    app.logger.setLevel(logging.DEBUG)  # Set to ERROR in production
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'cookr.sqlite'),

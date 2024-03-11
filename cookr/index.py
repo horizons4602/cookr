@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, session, jsonify
+    Blueprint, flash, g, redirect, render_template, request, url_for, session, jsonify, logging
 )
 from werkzeug.exceptions import abort
 
@@ -16,16 +16,21 @@ bp = Blueprint('index', __name__)
 @bp.route('/')
 @login_required
 def home_page():
-    #session.clear()
-    return render_template('main/index.html')
+    try:
+        #session.clear()
+        return render_template('main/index.html')
+    except Exception as e:
+        print("An Exception Occured:", e)
+        return "An error occured", 500
 
 @bp.route('/findRecipes', methods=['GET', 'POST'])
 @login_required
 def query_user():
-    if request.method == 'POST':
-        cuisineType = request.form['cuisine']
-        health = request.form['diet']
-        mealType = request.form['meal_type']
+    try:
+        if request.method == 'POST':
+            cuisineType = request.form['cuisine']
+            health = request.form['diet']
+            mealType = request.form['meal_type']
 
         # Clear userParams from session
         session.pop('userParams', None)
@@ -37,8 +42,10 @@ def query_user():
 
         session['userParams'] = userParams
 
-        return redirect(url_for('index.find_recipes'))
-    return render_template('main/recipequery.html')
+        return render_template('main/recipequery.html')
+    except Exception as e:
+        print("An Exception Occured:", e)
+        return "An error occured", 500
 
 # Query of recipes
 @bp.route('/findRecipes/search')
@@ -124,32 +131,36 @@ def information(recipeID):
 @bp.route('/saved')
 @login_required
 def saved():
-    page = request.args.get('page', 1, type=int)
-    per_page = 10
+    try:
+        page = request.args.get('page', 1, type=int)
+        per_page = 10
 
-    db = get_db()
-    
-    # Check if the random recipe list is already in the session
-    if 'random_recipe_ids' not in session:
-        # Fetch a random set of recipe IDs
-        random_recipe_ids = db.execute(
-            'SELECT id FROM recipe ORDER BY RANDOM() LIMIT ?',
-            (per_page,)
+        db = get_db()
+        
+        # Check if the random recipe list is already in the session
+        if 'random_recipe_ids' not in session:
+            # Fetch a random set of recipe IDs
+            random_recipe_ids = db.execute(
+                'SELECT id FROM recipe ORDER BY RANDOM() LIMIT ?',
+                (per_page,)
+            ).fetchall()
+
+            # Store the list in the session
+            session['random_recipe_ids'] = [row['id'] for row in random_recipe_ids]
+
+        # Get the appropriate subset of recipe IDs based on the current page
+        start_index = (page - 1) * per_page
+        end_index = start_index + per_page
+        current_recipe_ids = session['random_recipe_ids'][start_index:end_index]
+
+        # Fetch the details of the recipes
+        savedRecipes = db.execute(
+            'SELECT r.id, title, image, imageType, saving_user'
+            ' FROM recipe r JOIN user u ON r.saving_user = u.id'
+            ' WHERE r.id IN ({})'.format(','.join(map(str, current_recipe_ids)))
         ).fetchall()
 
-        # Store the list in the session
-        session['random_recipe_ids'] = [row['id'] for row in random_recipe_ids]
-
-    # Get the appropriate subset of recipe IDs based on the current page
-    start_index = (page - 1) * per_page
-    end_index = start_index + per_page
-    current_recipe_ids = session['random_recipe_ids'][start_index:end_index]
-
-    # Fetch the details of the recipes
-    savedRecipes = db.execute(
-        'SELECT r.id, title, image, imageType, saving_user'
-        ' FROM recipe r JOIN user u ON r.saving_user = u.id'
-        ' WHERE r.id IN ({})'.format(','.join(map(str, current_recipe_ids)))
-    ).fetchall()
-
-    return render_template('main/saved.html', recipes=savedRecipes, page=page)
+        return render_template('main/saved.html', recipes=savedRecipes, page=page)
+    except Exception as e:
+        print("An Exception Occured:", e)
+        return "An error occured", 500
