@@ -86,6 +86,11 @@ CREATE TABLE recipe (
   calories FLOAT NOT NULL,
   totalWeight FLOAT NOT NULL,
   totalTime FLOAT NOT NULL,
+  protein FLOAT NOT NULL,
+  carbs FLOAT NOT NULL,
+  fat FLOAT NOT NULL,
+  sugar FLOAT NOT NULL,
+  sodium FLOAT NOT NULL,
   saving_user INTEGER NOT NULL,
   FOREIGN KEY (saving_user) REFERENCES user (id)
 );
@@ -107,15 +112,17 @@ CREATE TABLE saved_recipe (
 );
 
 CREATE TABLE macro_info (
-  userWeight INTEGER TEXT NOT NULL,
-  userSex TEXT NOT NULL,
-  userHeight TEXT NOT NULL,
-  userAge INTEGER NOT NULL,
-  userActivityLevel TEXT NOT NULL,
-  userCalories INTEGER NOT NULL,
-  userProtein INTEGER NOT NULL,
-  userCarbs INTEGER NOT NULL,
-  userFat INTEGER NOT NULL,
+  user_weight FLOAT TEXT NOT NULL,
+  user_sex TEXT NOT NULL,
+  user_height FLOAT NOT NULL,
+  user_age INT NOT NULL,
+  user_activity_level FLOAT NOT NULL,
+  user_calories FLOAT NOT NULL,
+  user_protein FLOAT NOT NULL,
+  user_carbs FLOAT NOT NULL,
+  user_fat FLOAT NOT NULL,
+  user_sugar FLOAT NOT NULL,
+  user_sodium FLOAT NOT NULL,
   saving_user INTEGER NOT NULL,
   FOREIGN KEY (saving_user) REFERENCES user (id)
 );

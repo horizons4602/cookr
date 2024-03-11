@@ -64,9 +64,14 @@ def analyze_recipes(recipesQuery, recipesPerQuery, user_id):
         ingredients = []
         for ingredient in recipesQuery["hits"][recipeIndex]["recipe"]["ingredientLines"]:
             ingredients.append(ingredient)
-        calories = recipesQuery["hits"][recipeIndex]["recipe"]['calories']
+        calories = recipesQuery["hits"][recipeIndex]["recipe"]["totalNutrients"].get("ENERC_KCAL", {}).get("quantity", 0.0)
         totalWeight = recipesQuery["hits"][recipeIndex]["recipe"]['totalWeight']
         totalTime = float(recipesQuery["hits"][recipeIndex]["recipe"]['totalTime'])
+        protein = recipesQuery["hits"][recipeIndex]["recipe"]["totalNutrients"].get("PROCNT", {}).get("quantity", 0.0)
+        carbs = recipesQuery["hits"][recipeIndex]["recipe"]["totalNutrients"].get("CHOCDF", {}).get("quantity", 0.0)
+        fat = recipesQuery["hits"][recipeIndex]["recipe"]["totalNutrients"].get("FAT", {}).get("quantity", 0.0)
+        sugar = recipesQuery["hits"][recipeIndex]["recipe"]["totalNutrients"].get("SUGAR.added", {}).get("quantity", 0.0)
+        sodium = recipesQuery["hits"][recipeIndex]["recipe"]["totalNutrients"].get("NA", {}).get("quantity", 0.0)
         # Get additional nutritional information here, it's in the API call
 
         error = None
@@ -85,28 +90,38 @@ def analyze_recipes(recipesQuery, recipesPerQuery, user_id):
             error = 'totalWeight is required.'
         elif totalTime is None:
             error = 'totalTime is required.'
+        elif protein is None:
+            error = 'protein is required.'
+        elif carbs is None:
+            error = 'carbs is required.'
+        elif fat is None:
+            error = 'fat is required.'
+        elif sugar is None:
+            error = 'sugar is required.'
+        elif sodium is None:
+            error = 'sodium is required.'
 
         # If error, skip to next recipe
         if error is not None:
+            print(f"Value error: {error}")
             continue
 
         # If recipe already seen by user, skip to next recipe
         existing_recipe = db.execute("SELECT title FROM recipe WHERE title = ? AND saving_user = ?", (title, user_id)).fetchone()
         if existing_recipe is None:
+            caching_recipe = recipe = Recipe(id=None, selfHref=selfHref, image=image, url=url, title=title, ingredients=ingredients, calories=calories, 
+                                                  totalWeight=totalWeight, totalTime=totalTime, protein=protein, carbs=carbs, fat=fat, sugar=sugar, sodium=sodium)
             if error is None:
                 try:
-                    caching_recipe = recipe = Recipe(id=None, selfHref=selfHref, image=image, url=url, title=title, ingredients=ingredients, calories=calories, 
-                                                  totalWeight=totalWeight, totalTime=totalTime)
                     id = insert_recipe_cache(caching_recipe, user_id)
-                    recipe = Recipe(id, selfHref, image, url, title, ingredients, calories, totalWeight, totalTime)
+                    recipe = Recipe(id, selfHref, image, url, title, ingredients, calories, totalWeight, totalTime, protein, carbs, fat, sugar, sodium)
                 except Exception as e:
                     # Should not occur, but just in case ¯\_(ツ)_/¯ 
-                    error = f"Error caching recipe: {recipe.title}, {e}"
-                    print(e)
+                    error = f"Error caching recipe: {recipe.title} for user {user_id}, {e}"
+                    print(error)
             recipes.append(recipe)
         else:
             continue
-
 
     #Create and Return Recipe List
     return recipes
