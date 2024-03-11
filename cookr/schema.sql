@@ -105,9 +105,16 @@ CREATE TABLE ingredient (
 CREATE TABLE saved_recipe (
   id INTEGER PRIMARY KEY,
   title TEXT NOT NULL,
-  image TEXT,
-  imageType TEXT,
-  saving_user INTEGER NOT NULL,
+  url TEXT NOT NULL,
+  title TEXT NOT NULL,
+  calories FLOAT NOT NULL,
+  totalWeight FLOAT NOT NULL,
+  totalTime FLOAT NOT NULL,
+  protein FLOAT NOT NULL,
+  carbs FLOAT NOT NULL,
+  fat FLOAT NOT NULL,
+  sugar FLOAT NOT NULL,
+  sodium FLOAT NOT NULL,
   FOREIGN KEY (saving_user) REFERENCES user (id)
 );
 
