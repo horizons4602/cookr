@@ -8,6 +8,8 @@ from cookr.db import get_db
 from cookr.dbhelper import get_recipes_from_ids, get_single_recipe_from_id
 from cookr.edamamrecipeapi import get_recipes
 from cookr.recipeapi import get_recipe_desc
+from cookr.recipeclasses import Recipe, RecipeRecommendation
+from cookr.preference import update_preferences, recommendation
 
 bp = Blueprint('index', __name__)
 
@@ -30,97 +32,101 @@ def query_user():
             health = request.form['diet']
             mealType = request.form['meal_type']
 
-            # Clear userParams from session
-            session.pop('userParams', None)
-            session.pop('next', None)
+        # Clear userParams from session
+        session.pop('userParams', None)
 
-            userParams = {'cuisineType': cuisineType, 'health': health, 'mealType': mealType}
+        userParams = {'cuisineType': cuisineType, 'health': health, 'mealType': mealType}
 
-            # If userParam value is empty, remove it from the dictionary
-            userParams = {k: v for k, v in userParams.items() if v}
+        # If userParam value is empty, remove it from the dictionary
+        userParams = {k: v for k, v in userParams.items() if v}
 
-            session['userParams'] = userParams
+        session['userParams'] = userParams
 
-            return redirect(url_for('index.find_recipes'))
         return render_template('main/recipequery.html')
     except Exception as e:
         print("An Exception Occured:", e)
         return "An error occured", 500
 
-# Initial query of recipes, future queries will be handled by the generate route (if more recipes exist)
+# Query of recipes
 @bp.route('/findRecipes/search')
 @login_required
 def find_recipes():
     user_id = session['user_id']
     userParams = session.get('userParams', {})
     try:
-        recipes, next = get_recipes(userParams, None, user_id)
+        recipes = get_recipes(userParams, user_id)
     except Exception as error:
         # Out of recipes
         print("An Exception Occured:", error)
         recipes = None
-        next = None
 
     recipe_ids = [recipe.id for recipe in recipes]
 
     session['recipes_ids'] = recipe_ids
-    session['next'] = next
     if recipes == None:
         flash('No recipes found!')
     return render_template('main/recipes.html', recipes=recipes)
 
-# Reveal more information (to be called dynamically)
+# Reveal more information (AJAX)
 @bp.route('/findRecipes/<int:recipeID>/information')
 def information(recipeID):
+    user_id = session['user_id']
+    error = None
+
     try:
-        # Get the recipe information
         recipe = get_single_recipe_from_id(recipeID)
         recipeTaste = get_recipe_desc(recipe)
-
-        # COMPARE TASTE TO USER PREFERENCE HERE, TBD
-
-        # For AJAX requests
-        # Return JSON
-        return jsonify({
-            'recipe': {
-                'title': recipe.title,
-                'image': recipe.image,
-                'url': recipe.url,
-                # Add more fields as needed
-            },
-            'recipeTaste': {
-                'sweetness': recipeTaste.sweetness,
-                'saltiness': recipeTaste.saltiness,
-                'sourness': recipeTaste.sourness,
-                'bitterness': recipeTaste.bitterness,
-                'savoriness': recipeTaste.savoriness,
-                'fattiness': recipeTaste.fattiness,
-                'spiciness': recipeTaste.spiciness,
-            },
-            # Likely more fields for comparison to user tastes here (booleans)
-        })
+        recipeRecommendations = recommendation(user_id, recipeTaste, recipe)
     except Exception as e:
-        print("An Exception Occured:", e)
-        return "An error occured", 500
+        error = str(e)
 
-# Generate new recipes route
-@bp.route('/findRecipes/generate')
-def generate():
-    user_id = session['user_id']
-    next = session['next']
-    try:
-        recipes, next = get_recipes(None, next, user_id)
-        session['next'] = next
+    if error is not None:
+        return jsonify({'error': error}), 500
 
-        # Store recipe.title
-        recipe_ids = [recipe.id for recipe in recipes]
-        
-        session['recipes_ids'] = recipe_ids
-    except:
-        # Out of recipes
-        recipes = None
-        next = None
-    return render_template('main/recipes.html', recipes=recipes)
+    # Construct the response data
+    response_data = {
+        'recipe': {
+            'title': recipe.title,
+            'image': recipe.image,
+            'url': recipe.url,
+            'totalTime': recipe.totalTime,
+            'totalWeight': recipe.totalWeight,
+            'calories': recipe.calories,
+            'protein': recipe.protein,
+            'carbs': recipe.carbs,
+            'fat': recipe.fat,
+            'sugar': recipe.sugar,
+            'sodium': recipe.sodium
+        },
+        'recipeTaste': {
+            'sweetness': recipeTaste.sweetness,
+            'saltiness': recipeTaste.saltiness,
+            'sourness': recipeTaste.sourness,
+            'bitterness': recipeTaste.bitterness,
+            'savoriness': recipeTaste.savoriness,
+            'fattiness': recipeTaste.fattiness,
+            'spiciness': recipeTaste.spiciness
+        },
+        'recipeRecommendations': {
+            # Booleans for recommendations
+            'sweetness': recipeRecommendations.sweetness,
+            'saltiness': recipeRecommendations.saltiness,
+            'sourness': recipeRecommendations.sourness,
+            'bitterness': recipeRecommendations.bitterness,
+            'savoriness': recipeRecommendations.savoriness,
+            'fattiness': recipeRecommendations.fattiness,
+            'spiciness': recipeRecommendations.spiciness,
+            # Daily percent intake
+            'calories': recipeRecommendations.calories,
+            'protein': recipeRecommendations.protein,
+            'carbs': recipeRecommendations.carbs,
+            'fat': recipeRecommendations.fat,
+            'sugar': recipeRecommendations.sugar,
+            'sodium': recipeRecommendations.sodium
+        }
+    }
+
+    return jsonify(response_data)
 
 @bp.route('/saved')
 @login_required

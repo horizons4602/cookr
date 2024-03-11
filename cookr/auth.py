@@ -6,6 +6,7 @@ from flask import (
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from cookr.db import get_db
+from cookr.dbhelper import initialize_user_preferences
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -24,7 +25,7 @@ def register():
 
         if error is None:
             try:
-                db.execute(
+                cursor = db.execute(
                     "INSERT INTO user (username, password) VALUES (?, ?)",
                     (username, generate_password_hash(password)),
                 )
@@ -32,6 +33,8 @@ def register():
             except db.IntegrityError:
                 error = f"User {username} is already registered."
             else:
+                user_id = cursor.lastrowid  # Get the last inserted ID
+                initialize_user_preferences(user_id)
                 return redirect(url_for("auth.login"))
 
         flash(error)

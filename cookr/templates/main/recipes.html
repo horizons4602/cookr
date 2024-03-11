@@ -1,4 +1,4 @@
-<!-- templates/index.html -->
+<!-- templates/recpies.html, for browsing displayed recipe results -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,10 +47,35 @@
             var recipeTitle = response.recipe.title;
             var recipeImage = response.recipe.image;
             var recipeURL = response.recipe.url;
+            var recipeIngredients = response.recipe.ingredients; // TBA
+            // Recipe instructions scraping results TBA
+            var recipeTime = response.recipe.totalTime;
+            var recipeWeight = response.recipe.totalWeight;
     
             var tasteSweetness = response.recipeTaste.sweetness;
             var tasteSaltiness = response.recipeTaste.saltiness;
-            // ... extract other taste properties
+            var tasteSourness = response.recipeTaste.sourness;
+            var tasteBitterness = response.recipeTaste.bitterness;
+            var tasteSavoriness = response.recipeTaste.savoriness;
+            var tasteFattiness = response.recipeTaste.fattiness;
+            var tasteSpiciness = response.recipeTaste.spiciness;
+            
+            // Recommendations
+            var recommendedSweetness = response.recipeRecommendations.sweetness;
+            var recommendedSaltiness = response.recipeRecommendations.saltiness;
+            var recommendedSourness = response.recipeRecommendations.sourness;
+            var recommendedBitterness = response.recipeRecommendations.bitterness;
+            var recommendedSavoriness = response.recipeRecommendations.savoriness;
+            var recommendedFattiness = response.recipeRecommendations.fattiness;
+            var recommendedSpiciness = response.recipeRecommendations.spiciness;
+
+            // Daily Nutrition Information for this recipe
+            var dailyCalories = response.recipeRecommendations.calories;
+            var dailyProtein = response.recipeRecommendations.protein;
+            var dailyCarbs = response.recipeRecommendations.carbs;
+            var dailyFat = response.recipeRecommendations.fat;
+            var dailySugar = response.recipeRecommendations.sugar; // Added sugar
+            var dailySodium = response.recipeRecommendations.sodium;
     
             // Construct HTML content
             var htmlContent = `
@@ -60,9 +85,27 @@
               <h4>Taste Information:</h4>
               <p>Sweetness: ${tasteSweetness}</p>
               <p>Saltiness: ${tasteSaltiness}</p>
-              <!-- Add more taste properties as needed -->
-    
-              <!-- You can customize the HTML structure based on your requirements -->
+              <p>Sourness: ${tasteSourness}</p>
+              <p>Bitterness: ${tasteBitterness}</p>
+              <p>Savoriness: ${tasteSavoriness}</p>
+              <p>Fattiness: ${tasteFattiness}</p>
+              <p>Spiciness: ${tasteSpiciness}</p>
+              <h4>Recommended Taste Information:</h4>
+              <p>Sweetness: ${recommendedSweetness}</p>
+              <p>Saltiness: ${recommendedSaltiness}</p>
+              <p>Sourness: ${recommendedSourness}</p>
+              <p>Bitterness: ${recommendedBitterness}</p>
+              <p>Savoriness: ${recommendedSavoriness}</p>
+              <p>Fattiness: ${recommendedFattiness}</p>
+              <p>Spiciness: ${recommendedSpiciness}</p>
+              <h4>Daily Nutrition Information:</h4>
+              <p>Calories: ${dailyCalories}</p>
+              <p>Protein: ${dailyProtein}</p>
+              <p>Carbs: ${dailyCarbs}</p>
+              <p>Fat: ${dailyFat}</p>
+              <p>Sugar: ${dailySugar}</p>
+              <p>Sodium: ${dailySodium}</p>
+  
             `;
     
             // Update the container with the constructed HTML
@@ -75,7 +118,7 @@
       });
     </script>    
     <script>
-        document.write('<button onclick="window.location.href=\'/findRecipes/generate\'">Show me more recipes!</button>');
+        document.write('<button onclick="window.location.href=\'/findRecipes/search\'">Show me more recipes!</button>');
     </script>
   {% else %}
     <div>

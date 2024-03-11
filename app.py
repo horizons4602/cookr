@@ -4,9 +4,9 @@ Author: Noah Fry, Brady Spencer, Maximus Meadowcroft, Jason Kern
 Brief: Provides wep app functionality for the cookr website and kitchen aid
 """
 from flask import Flask
+from flask_apscheduler import APScheduler
 
 app = Flask(__name__)
-
 
 @app.route('/')
 def hello_world():
@@ -27,6 +27,10 @@ def contact():
 @app.route('/recipes')
 def recipes():
     return 'Recipes'
+
+@app.route('/settings')
+def settings():
+    return 'Settings'
 
 if __name__ == '__main__':
     app.run(debug = True)

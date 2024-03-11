@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS user_health;
 DROP TABLE IF EXISTS saved_recipe;
 DROP TABLE IF EXISTS recipe;
 DROP TABLE IF EXISTS ingredient;
+DROP TABLE IF EXISTS macro_info;
 
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -84,7 +85,14 @@ CREATE TABLE recipe (
   title TEXT NOT NULL,
   calories FLOAT NOT NULL,
   totalWeight FLOAT NOT NULL,
-  totalTime FLOAT NOT NULL
+  totalTime FLOAT NOT NULL,
+  protein FLOAT NOT NULL,
+  carbs FLOAT NOT NULL,
+  fat FLOAT NOT NULL,
+  sugar FLOAT NOT NULL,
+  sodium FLOAT NOT NULL,
+  saving_user INTEGER NOT NULL,
+  FOREIGN KEY (saving_user) REFERENCES user (id)
 );
 
 CREATE TABLE ingredient (
@@ -99,6 +107,22 @@ CREATE TABLE saved_recipe (
   title TEXT NOT NULL,
   image TEXT,
   imageType TEXT,
+  saving_user INTEGER NOT NULL,
+  FOREIGN KEY (saving_user) REFERENCES user (id)
+);
+
+CREATE TABLE macro_info (
+  user_weight FLOAT TEXT NOT NULL,
+  user_sex TEXT NOT NULL,
+  user_height FLOAT NOT NULL,
+  user_age INT NOT NULL,
+  user_activity_level FLOAT NOT NULL,
+  user_calories FLOAT NOT NULL,
+  user_protein FLOAT NOT NULL,
+  user_carbs FLOAT NOT NULL,
+  user_fat FLOAT NOT NULL,
+  user_sugar FLOAT NOT NULL,
+  user_sodium FLOAT NOT NULL,
   saving_user INTEGER NOT NULL,
   FOREIGN KEY (saving_user) REFERENCES user (id)
 );
