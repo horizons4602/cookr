@@ -17,6 +17,7 @@ def recipe_ingredient_clean(app):
         # Delete expired recipe and ingredient records
         for recipe in recipes:
             db.execute("DELETE FROM ingredient WHERE recipe_id = ?", (recipe['id'],))
+            db.execute("DELETE FROM recipe_taste WHERE recipe_id = ?", (recipe['id'],))
             db.execute("DELETE FROM recipe WHERE id = ?", (recipe['id'],))
     
         db.commit()

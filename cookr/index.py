@@ -5,7 +5,7 @@ from werkzeug.exceptions import abort
 
 from cookr.auth import login_required
 from cookr.db import get_db
-from cookr.dbhelper import get_recipes_from_ids, get_single_recipe_from_id
+from cookr.dbhelper import get_recipes_from_ids, get_single_recipe_from_id, get_recipedesc_from_id
 from cookr.edamamrecipeapi import get_recipes
 from cookr.recipeapi import get_recipe_desc
 from cookr.recipeclasses import Recipe, RecipeRecommendation
@@ -121,6 +121,25 @@ def information(recipeID):
 
     return jsonify(response_data)
 
+# TBA - Save recipe
+
+# Update user preferences
+@bp.route('/findRecipes/<int:recipeID>/<string:decision>')
+def accept_reject_recipe(recipeID, decision):
+    user_id = session['user_id']
+
+    # Let string be "accept" or "reject"
+    accept = True if decision == "accept" else False
+
+    try:
+        recipeTaste = get_recipedesc_from_id(recipeID)
+        update_preferences(user_id, recipeTaste, accept)
+    except Exception as e:
+        error = str(e)
+
+    # Return success
+    return jsonify({'success': True})
+    
 @bp.route('/saved')
 @login_required
 def saved():

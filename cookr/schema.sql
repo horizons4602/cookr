@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS user_nutrition;
 DROP TABLE IF EXISTS user_health;
 DROP TABLE IF EXISTS saved_recipe;
 DROP TABLE IF EXISTS recipe;
+DROP TABLE IF EXISTS recipe_taste;
 DROP TABLE IF EXISTS ingredient;
 DROP TABLE IF EXISTS macro_info;
 
@@ -102,11 +103,22 @@ CREATE TABLE ingredient (
   FOREIGN KEY (recipe_id) REFERENCES recipe (id)
 );
 
+CREATE TABLE recipe_taste (
+  sweetness INTEGER NOT NULL,
+  saltiness INTEGER NOT NULL,
+  sourness INTEGER NOT NULL,
+  bitterness INTEGER NOT NULL,
+  savoriness INTEGER NOT NULL,
+  fattiness INTEGER NOT NULL,
+  spiciness INTEGER NOT NULL,
+  recipe_id INTEGER NOT NULL,
+  FOREIGN KEY (recipe_id) REFERENCES recipe (id)
+);
+
 CREATE TABLE saved_recipe (
   id INTEGER PRIMARY KEY,
   title TEXT NOT NULL,
   url TEXT NOT NULL,
-  title TEXT NOT NULL,
   calories FLOAT NOT NULL,
   totalWeight FLOAT NOT NULL,
   totalTime FLOAT NOT NULL,
@@ -115,6 +127,7 @@ CREATE TABLE saved_recipe (
   fat FLOAT NOT NULL,
   sugar FLOAT NOT NULL,
   sodium FLOAT NOT NULL,
+  saving_user INTEGER NOT NULL,
   FOREIGN KEY (saving_user) REFERENCES user (id)
 );
 
