@@ -7,6 +7,7 @@ import os
 import json
 from dotenv import load_dotenv
 from cookr.recipeclasses import RecipeDesc
+from cookr.dbhelper import insert_recipedesc_cache
 load_dotenv()
 
 from cookr.edamamrecipeapi import Recipe
@@ -54,6 +55,12 @@ def get_recipe_desc(recipe):
         spiciness = limit(analyzeRecipeQuery['taste']['spiciness'])
         
         recipeDesc = RecipeDesc(sweetness, saltiness, sourness, bitterness, savoriness, fattiness, spiciness)
+
+        try:
+            insert_recipedesc_cache(recipeDesc, recipe.id)
+        except:
+            raise Exception(f"Error: Recipe Taste Description with ID {recipe.id} could not be initially cached.")
+
         return recipeDesc
     except requests.exceptions.JSONDecodeError as e:
         print("Error decoding JSON:", e)

@@ -42,6 +42,27 @@ def insert_recipe_cache(recipe: Recipe, user_id):
         error = f"Database {context} Error: Recipe {recipe} could not be inserted into Database."
         print(error)
 
+# Refresh time for deletion by scheduler; for when recipe taste info is queried
+def refresh_recipe_cache(recipe_id):
+    # Get current time and date, formatted for DATETIME type
+    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    db = get_db()
+
+    try:
+        cursor = db.cursor()
+        cursor.execute(
+            "UPDATE recipe SET creationTime = ? WHERE id = ?",
+            (current_datetime, recipe_id),
+        )
+        
+        db.commit()
+        
+    except db.IntegrityError:
+        # Should not occur, but just in case ¯\_(ツ)_/¯ 
+        error = f"Database recipe error: Recipe {recipe_id} could not be updated with a refreshed timer in the Database."
+        print(error)
+
 def get_recipes_from_ids(recipe_ids):
     db = get_db()
 
@@ -153,3 +174,33 @@ def get_user_macronutrients(user_id):
         return macronutrients
 
     return macronutrients
+
+def insert_recipedesc_cache(recipedesc: RecipeDesc, recipe_id):
+    db = get_db()
+
+    try:
+
+        try:
+            refresh_recipe_cache(recipe_id)
+        except:
+            raise Exception(f"Database Error: Recipe with ID {recipe_id} could not be found. Likely expired.")
+        
+        cursor = db.cursor()
+        cursor.execute(
+            "INSERT INTO recipe_taste (sweetness, saltiness, sourness, bitterness, savoriness, fattiness, spiciness, recipe_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (recipedesc.sweetness, recipedesc.saltiness, recipedesc.sourness, recipedesc.bitterness, recipedesc.savoriness, recipedesc.fattiness, recipedesc.spiciness, recipe_id),
+        )
+        db.commit()
+    except db.IntegrityError:
+        error = f"Database Error: Recipe taste description for recipe ID {recipe_id} could not be inserted into Database."
+        print(error)
+
+def get_recipedesc_from_id(recipe_id):
+    db = get_db()
+
+    try:
+        recipedesc = db.execute('SELECT * FROM recipe_taste WHERE recipe_id = ?', (recipe_id,)).fetchone()
+    except:
+        raise Exception(f"Database Error: Recipe taste description with ID {recipe_id} query could not be executed.")
+
+    return RecipeDesc(recipedesc['sweetness'], recipedesc['saltiness'], recipedesc['sourness'], recipedesc['bitterness'], recipedesc['savoriness'], recipedesc['fattiness'], recipedesc['spiciness'])
