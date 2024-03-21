@@ -1,25 +1,73 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, session, jsonify, logging
+    Blueprint, flash, g, redirect, render_template, request, url_for, session, jsonify
 )
 from werkzeug.exceptions import abort
 
+from functools import wraps
 from cookr.auth import login_required
 from cookr.db import get_db
-from cookr.dbhelper import get_recipes_from_ids, get_single_recipe_from_id
+from cookr.dbhelper import get_recipes_from_ids, get_single_recipe_from_id, get_recipedesc_from_id
 from cookr.edamamrecipeapi import get_recipes
 from cookr.recipeapi import get_recipe_desc
+from cookr.recipeclasses import Recipe, RecipeRecommendation
+from cookr.preference import update_preferences, recommendation
 
 bp = Blueprint('index', __name__)
 
+# LANDING HOME PAGE
+# DISPLAYS LANDING PAGE IF A USER IS NOT LOGGED IN 
+# DISPLAYS SWIPE PAGE IF USER IS LOGGED IN
 @bp.route('/')
-@login_required
 def home_page():
-    try:
-        #session.clear()
+    if 'user_id' in session:
         return render_template('main/index.html')
-    except Exception as e:
-        print("An Exception Occured:", e)
-        return "An error occured", 500
+    else:
+        return render_template('landing/landing.html')
+
+@bp.route('/contact')
+def contact():
+    return render_template('/landing/contact.html')
+
+@bp.route('/about')
+def about():
+    return render_template('/landing/about.html')
+
+@bp.route('/thankyou')
+def thankYou():
+    return render_template('/landing/thankYou.html')
+
+@bp.route('/thankyou2')
+def thankYou2():
+    return render_template('/landing/thankYou2.html')
+
+@bp.route('/landingtos')
+def landingTOS():
+    return render_template('/landing/landingTOS.html')
+
+@bp.route('/landingpp')
+def landingPP():
+    return render_template('/landing/landingPP.html')
+
+@bp.route('/onboarding')
+def onboarding():
+    return render_template('/main/onboarding.html')
+
+@bp.route('/saved')
+def saved():
+    return render_template('/main/saved.html')
+
+@bp.route('/tos')
+def tos():
+    return render_template('/main/mainTOS.html')
+
+@bp.route('/account')
+def account():
+    return render_template('/main/account.html')
+
+@bp.route('/privacypolicy')
+def privacypolicy():
+    return render_template('/main/mainPP.html')
+
 
 @bp.route('/findRecipes', methods=['GET', 'POST'])
 @login_required
@@ -30,131 +78,117 @@ def query_user():
             health = request.form['diet']
             mealType = request.form['meal_type']
 
-            # Clear userParams from session
-            session.pop('userParams', None)
-            session.pop('next', None)
+        # Clear userParams from session
+        session.pop('userParams', None)
 
-            userParams = {'cuisineType': cuisineType, 'health': health, 'mealType': mealType}
+        userParams = {'cuisineType': cuisineType, 'health': health, 'mealType': mealType}
 
-            # If userParam value is empty, remove it from the dictionary
-            userParams = {k: v for k, v in userParams.items() if v}
+        # If userParam value is empty, remove it from the dictionary
+        userParams = {k: v for k, v in userParams.items() if v}
 
-            session['userParams'] = userParams
+        session['userParams'] = userParams
 
-            return redirect(url_for('index.find_recipes'))
         return render_template('main/recipequery.html')
     except Exception as e:
         print("An Exception Occured:", e)
         return "An error occured", 500
 
-# Initial query of recipes, future queries will be handled by the generate route (if more recipes exist)
+# Query of recipes
 @bp.route('/findRecipes/search')
 @login_required
 def find_recipes():
     user_id = session['user_id']
     userParams = session.get('userParams', {})
     try:
-        recipes, next = get_recipes(userParams, None, user_id)
+        recipes = get_recipes(userParams, user_id)
     except Exception as error:
         # Out of recipes
         print("An Exception Occured:", error)
         recipes = None
-        next = None
 
     recipe_ids = [recipe.id for recipe in recipes]
 
     session['recipes_ids'] = recipe_ids
-    session['next'] = next
     if recipes == None:
         flash('No recipes found!')
     return render_template('main/recipes.html', recipes=recipes)
 
-# Reveal more information (to be called dynamically)
+# Reveal more information (AJAX)
 @bp.route('/findRecipes/<int:recipeID>/information')
 def information(recipeID):
+    user_id = session['user_id']
+    error = None
+
     try:
-        # Get the recipe information
         recipe = get_single_recipe_from_id(recipeID)
         recipeTaste = get_recipe_desc(recipe)
-
-        # COMPARE TASTE TO USER PREFERENCE HERE, TBD
-
-        # For AJAX requests
-        # Return JSON
-        return jsonify({
-            'recipe': {
-                'title': recipe.title,
-                'image': recipe.image,
-                'url': recipe.url,
-                # Add more fields as needed
-            },
-            'recipeTaste': {
-                'sweetness': recipeTaste.sweetness,
-                'saltiness': recipeTaste.saltiness,
-                'sourness': recipeTaste.sourness,
-                'bitterness': recipeTaste.bitterness,
-                'savoriness': recipeTaste.savoriness,
-                'fattiness': recipeTaste.fattiness,
-                'spiciness': recipeTaste.spiciness,
-            },
-            # Likely more fields for comparison to user tastes here (booleans)
-        })
+        recipeRecommendations = recommendation(user_id, recipeTaste, recipe)
     except Exception as e:
-        print("An Exception Occured:", e)
-        return "An error occured", 500
+        error = str(e)
 
-# Generate new recipes route
-@bp.route('/findRecipes/generate')
-def generate():
+    if error is not None:
+        return jsonify({'error': error}), 500
+
+    # Construct the response data
+    response_data = {
+        'recipe': {
+            'title': recipe.title,
+            'image': recipe.image,
+            'url': recipe.url,
+            'totalTime': recipe.totalTime,
+            'totalWeight': recipe.totalWeight,
+            'calories': recipe.calories,
+            'protein': recipe.protein,
+            'carbs': recipe.carbs,
+            'fat': recipe.fat,
+            'sugar': recipe.sugar,
+            'sodium': recipe.sodium
+        },
+        'recipeTaste': {
+            'sweetness': recipeTaste.sweetness,
+            'saltiness': recipeTaste.saltiness,
+            'sourness': recipeTaste.sourness,
+            'bitterness': recipeTaste.bitterness,
+            'savoriness': recipeTaste.savoriness,
+            'fattiness': recipeTaste.fattiness,
+            'spiciness': recipeTaste.spiciness
+        },
+        'recipeRecommendations': {
+            # Booleans for recommendations
+            'sweetness': recipeRecommendations.sweetness,
+            'saltiness': recipeRecommendations.saltiness,
+            'sourness': recipeRecommendations.sourness,
+            'bitterness': recipeRecommendations.bitterness,
+            'savoriness': recipeRecommendations.savoriness,
+            'fattiness': recipeRecommendations.fattiness,
+            'spiciness': recipeRecommendations.spiciness,
+            # Daily percent intake
+            'calories': recipeRecommendations.calories,
+            'protein': recipeRecommendations.protein,
+            'carbs': recipeRecommendations.carbs,
+            'fat': recipeRecommendations.fat,
+            'sugar': recipeRecommendations.sugar,
+            'sodium': recipeRecommendations.sodium
+        }
+    }
+
+    return jsonify(response_data)
+
+# TBA - Save recipe
+
+# Update user preferences
+@bp.route('/findRecipes/<int:recipeID>/<string:decision>')
+def accept_reject_recipe(recipeID, decision):
     user_id = session['user_id']
-    next = session['next']
+
+    # Let string be "accept" or "reject"
+    accept = True if decision == "accept" else False
+
     try:
-        recipes, next = get_recipes(None, next, user_id)
-        session['next'] = next
-
-        # Store recipe.title
-        recipe_ids = [recipe.id for recipe in recipes]
-        
-        session['recipes_ids'] = recipe_ids
-    except:
-        # Out of recipes
-        recipes = None
-        next = None
-    return render_template('main/recipes.html', recipes=recipes)
-
-@bp.route('/saved')
-@login_required
-def saved():
-    try:
-        page = request.args.get('page', 1, type=int)
-        per_page = 10
-
-        db = get_db()
-        
-        # Check if the random recipe list is already in the session
-        if 'random_recipe_ids' not in session:
-            # Fetch a random set of recipe IDs
-            random_recipe_ids = db.execute(
-                'SELECT id FROM recipe ORDER BY RANDOM() LIMIT ?',
-                (per_page,)
-            ).fetchall()
-
-            # Store the list in the session
-            session['random_recipe_ids'] = [row['id'] for row in random_recipe_ids]
-
-        # Get the appropriate subset of recipe IDs based on the current page
-        start_index = (page - 1) * per_page
-        end_index = start_index + per_page
-        current_recipe_ids = session['random_recipe_ids'][start_index:end_index]
-
-        # Fetch the details of the recipes
-        savedRecipes = db.execute(
-            'SELECT r.id, title, image, imageType, saving_user'
-            ' FROM recipe r JOIN user u ON r.saving_user = u.id'
-            ' WHERE r.id IN ({})'.format(','.join(map(str, current_recipe_ids)))
-        ).fetchall()
-
-        return render_template('main/saved.html', recipes=savedRecipes, page=page)
+        recipeTaste = get_recipedesc_from_id(recipeID)
+        update_preferences(user_id, recipeTaste, accept)
     except Exception as e:
-        print("An Exception Occured:", e)
-        return "An error occured", 500
+        error = str(e)
+
+    # Return success
+    return jsonify({'success': True})

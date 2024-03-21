@@ -1,134 +1,275 @@
-html {
-    font-family: sans-serif;
-    background: #eee;
-    padding: 1rem;
-  }
-  
-  body {
-    max-width: 960px;
-    margin: 0 auto;
-    background: white;
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-    font-family: serif;
-    color: #377ba8;
-    margin: 1rem 0;
-  }
-  
-  a {
-    color: #377ba8;
-  }
-  
-  hr {
-    border: none;
-    border-top: 1px solid lightgray;
-  }
-  
-  nav {
-    background: lightgray;
-    display: flex;
-    align-items: center;
-    padding: 0 0.5rem;
-  }
-  
-  nav h1 {
-    flex: auto;
-    margin: 0;
-  }
-  
-  nav h1 a {
-    text-decoration: none;
-    padding: 0.25rem 0.5rem;
-  }
-  
-  nav ul  {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  
-  nav ul li a, nav ul li span, header .action {
-    display: block;
-    padding: 0.5rem;
-  }
-  
-  .content {
-    padding: 0 1rem 1rem;
-  }
-  
-  .content > header {
-    border-bottom: 1px solid lightgray;
-    display: flex;
-    align-items: flex-end;
-  }
-  
-  .content > header h1 {
-    flex: auto;
-    margin: 1rem 0 0.25rem 0;
-  }
-  
-  .flash {
-    margin: 1em 0;
-    padding: 1em;
-    background: #cae6f6;
-    border: 1px solid #377ba8;
-  }
-  
-  .post > header {
-    display: flex;
-    align-items: flex-end;
-    font-size: 0.85em;
-  }
-  
-  .post > header > div:first-of-type {
-    flex: auto;
-  }
-  
-  .post > header h1 {
-    font-size: 1.5em;
-    margin-bottom: 0;
-  }
-  
-  .post .about {
-    color: slategray;
-    font-style: italic;
-  }
-  
-  .post .body {
-    white-space: pre-line;
-  }
-  
-  .content:last-child {
-    margin-bottom: 0;
-  }
-  
-  .content form {
-    margin: 1em 0;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .content label {
-    font-weight: bold;
-    margin-bottom: 0.5em;
-  }
-  
-  .content input, .content textarea {
-    margin-bottom: 1em;
-  }
-  
-  .content textarea {
-    min-height: 12em;
-    resize: vertical;
-  }
-  
-  input.danger {
-    color: #cc2f2e;
-  }
-  
-  input[type=submit] {
-    align-self: start;
-    min-width: 10em;
-  }
+/*GENERAL STYLING*/
+
+/*LANDING HOME PAGE STYLING*/
+/**/
+/**/
+#landingHero {
+  height: 75vh; /* 100% of the viewport height */
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center;
+}
+
+/* Ensure the container itself is also a flex container to center its contents vertically */
+#landingHero .container {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  justify-content: center; /* Center children vertically */
+  height: 100%; /* Take full height of its parent */
+}
+
+/* Optionally, adjust the button styling */
+#landingHero a {
+  margin-top: 20px; /* Add some space above the button */
+  padding: 10px 20px; /* Padding for larger click area and visual appeal */
+  border: none; /* Remove default border */
+  border-radius: 5px; /* Rounded corners */
+}
+
+#landingAbout {
+  margin-top: 19vh;
+  margin-bottom: 10vh;
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center;
+}
+
+#landingAbout h2 {
+  margin-bottom: 5vh;
+}
+
+#landingContact {
+  height: 50vh;
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center;
+}
+
+#landingNewsletter {
+  height: 50vh;
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center;
+}
+
+/* LANDING CONTACT PAGE STYLES */
+/**/
+/**/
+#contactContact {
+  height: 70vh;
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center;
+}
+
+#contactNewsletter {
+  height: 15vh;
+  margin-bottom: 5vh;
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center;
+}
+
+/* LANDING ABOUT PAGE STYLES */
+/**/
+/**/
+#aboutHero {
+  height: 75vh; /* 100% of the viewport height */
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center;
+}
+
+#aboutHero h1{
+  margin-top: 0vh;
+  margin-bottom: 0vh;
+}
+
+#aboutHero h5{
+  margin-top: 3vh;
+}
+
+#aboutAbout {
+  margin-top: 19vh;
+  margin-bottom: 10vh;
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center;
+}
+
+#aboutFeatures {
+  height: 80vh;
+}
+
+#aboutFeatures img{
+  width: 40vw;
+}
+
+#aboutNewsletter {
+  height: 15vh;
+  margin-bottom: 5vh;
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center;
+}
+
+/* LANDING PAGE THANK YOU STYLES */
+/**/
+/**/
+#thankYouHero {
+  height: 75vh; /* 100% of the viewport height */
+  margin-bottom: 13vh;
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center;
+}
+
+/* LANDING PAGE THANK YOU 2 STYLES */
+/**/
+/**/
+#thankYou2Hero {
+  height: 75vh; /* 100% of the viewport height */
+  margin-bottom: 13vh;
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center;
+}
+
+/* LANDING TOS STYLES */
+/**/
+/**/
+#landingTOSHero {
+  height: 75vh; /* 100% of the viewport height */
+  margin-bottom: 13vh;
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center; 
+}
+
+/* LANDING TOS STYLES */
+/**/
+/**/
+#landingPPHero {
+  height: 75vh; /* 100% of the viewport height */
+  margin-bottom: 13vh;
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center; 
+}
+
+/* LOGIN STYLES */
+/**/
+/**/
+#logInForm {
+  height: 70vh;
+  margin-bottom: 18vh;
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center;
+}
+
+
+/* REGISTER STYLES */
+/**/
+/**/
+#registerForm {
+  height: 70vh;
+  margin-bottom: 18vh;
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center;
+}
+
+
+/* ONBOARDING STYLES */
+/**/
+/**/
+#onboarding {
+  height: 70vh;
+  margin-bottom: 18vh;
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center;
+}
+
+
+/* SWIPE HOME */
+/**/
+/**/
+#mainSwipe {
+  height: 88vh; /* 100% of the viewport height */
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center;
+}
+
+
+/* SAVED*/
+/**/
+/**/
+#saved {
+  height: 88vh; /* 100% of the viewport height */
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center;
+}
+
+#saved .card {
+  max-width: 30vw; /* Adjust the width as needed */
+  margin: auto; /* Centers the card in the carousel item */
+}
+
+
+/* MAIN TOS */
+/**/
+/**/
+#mainTOSHero {
+  height: 75vh; /* 100% of the viewport height */
+  margin-bottom: 13vh;
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center; 
+}
+
+/* MAIN PP */
+/**/
+/**/
+#mainPPHero {
+  height: 75vh; /* 100% of the viewport height */
+  margin-bottom: 13vh;
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center; 
+}
+
+/* ACCOUNT STYLES */
+/**/
+/**/
+#account {
+  height: 88vh;
+  display: flex;
+  justify-content: center; /* Center horizontally in the viewport */
+  align-items: center; /* Center vertically in the viewport */
+  text-align: center;
+}
+

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section id="onboarding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10"> <!-- Adjusted for better form width -->
+                <h1>Thank You For Registering a New Account</h2>
+                <h5>Please Quickly Fill Out This Form!</h5>
+                <br>
+                <form action="" method="POST">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="age" name="age" placeholder="Age" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="sex" name="sex" placeholder="Sex" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="weight" name="weight" placeholder="Weight" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="height" name="height" placeholder="Height" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="alergies" name="alergies" placeholder="Alergies" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="etc" name="etc" placeholder="Etc" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

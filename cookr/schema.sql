@@ -4,7 +4,9 @@ DROP TABLE IF EXISTS user_nutrition;
 DROP TABLE IF EXISTS user_health;
 DROP TABLE IF EXISTS saved_recipe;
 DROP TABLE IF EXISTS recipe;
+DROP TABLE IF EXISTS recipe_taste;
 DROP TABLE IF EXISTS ingredient;
+DROP TABLE IF EXISTS macro_info;
 
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -84,7 +86,14 @@ CREATE TABLE recipe (
   title TEXT NOT NULL,
   calories FLOAT NOT NULL,
   totalWeight FLOAT NOT NULL,
-  totalTime FLOAT NOT NULL
+  totalTime FLOAT NOT NULL,
+  protein FLOAT NOT NULL,
+  carbs FLOAT NOT NULL,
+  fat FLOAT NOT NULL,
+  sugar FLOAT NOT NULL,
+  sodium FLOAT NOT NULL,
+  saving_user INTEGER NOT NULL,
+  FOREIGN KEY (saving_user) REFERENCES user (id)
 );
 
 CREATE TABLE ingredient (
@@ -94,11 +103,46 @@ CREATE TABLE ingredient (
   FOREIGN KEY (recipe_id) REFERENCES recipe (id)
 );
 
+CREATE TABLE recipe_taste (
+  sweetness INTEGER NOT NULL,
+  saltiness INTEGER NOT NULL,
+  sourness INTEGER NOT NULL,
+  bitterness INTEGER NOT NULL,
+  savoriness INTEGER NOT NULL,
+  fattiness INTEGER NOT NULL,
+  spiciness INTEGER NOT NULL,
+  recipe_id INTEGER NOT NULL,
+  FOREIGN KEY (recipe_id) REFERENCES recipe (id)
+);
+
 CREATE TABLE saved_recipe (
   id INTEGER PRIMARY KEY,
   title TEXT NOT NULL,
-  image TEXT,
-  imageType TEXT,
+  url TEXT NOT NULL,
+  calories FLOAT NOT NULL,
+  totalWeight FLOAT NOT NULL,
+  totalTime FLOAT NOT NULL,
+  protein FLOAT NOT NULL,
+  carbs FLOAT NOT NULL,
+  fat FLOAT NOT NULL,
+  sugar FLOAT NOT NULL,
+  sodium FLOAT NOT NULL,
+  saving_user INTEGER NOT NULL,
+  FOREIGN KEY (saving_user) REFERENCES user (id)
+);
+
+CREATE TABLE macro_info (
+  user_weight FLOAT TEXT NOT NULL,
+  user_sex TEXT NOT NULL,
+  user_height FLOAT NOT NULL,
+  user_age INT NOT NULL,
+  user_activity_level FLOAT NOT NULL,
+  user_calories FLOAT NOT NULL,
+  user_protein FLOAT NOT NULL,
+  user_carbs FLOAT NOT NULL,
+  user_fat FLOAT NOT NULL,
+  user_sugar FLOAT NOT NULL,
+  user_sodium FLOAT NOT NULL,
   saving_user INTEGER NOT NULL,
   FOREIGN KEY (saving_user) REFERENCES user (id)
 );

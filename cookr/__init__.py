@@ -1,8 +1,8 @@
 import os
 
 from flask import Flask
-from flask_apscheduler import APScheduler
-from cookr.dbhelper import recipe_ingredient_clean
+from apscheduler.schedulers.background import BackgroundScheduler
+from cookr.scheduledjobs import recipe_ingredient_clean
 import logging
 
 def create_app(test_config=None):
@@ -10,8 +10,6 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     # Configure Flask logging
     app.logger.setLevel(logging.DEBUG)  # Set to ERROR in production
-    scheduler = APScheduler()
-    scheduler.init_app(app)
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'cookr.sqlite'),
@@ -37,16 +35,6 @@ def create_app(test_config=None):
     
     from . import db
     db.init_app(app)
-
-    # Delete expired recipes from "recipe" and "ingredient" tables
-    # Every 12 minutes
-    @scheduler.task('interval', id='clear_recipe_ingredient_records', minutes=15, misfire_grace_time=900)
-    def clear_recipe_ingredient_records():
-        try:
-            recipe_ingredient_clean()
-        except Exception as e:
-            app.logger.error('An Exception Occured: %s', e)
-            return "An error occured", 500
         
     from . import auth
     app.register_blueprint(auth.bp)
@@ -57,5 +45,20 @@ def create_app(test_config=None):
     from . import index
     app.register_blueprint(index.bp)
     app.add_url_rule('/', endpoint='index')
+    
+    create_scheduler(app)
+
+    app.app_context().push()
 
     return app
+
+def create_scheduler(app):
+    scheduler = BackgroundScheduler()
+    scheduler.start()
+
+    # Add scheduled jobs
+
+    # Clean up old recipe records every 15 minutes
+    scheduler.add_job(lambda: recipe_ingredient_clean(app), 'interval', minutes=1, id='clear_recipe_ingredient_records', misfire_grace_time=900)
+
+    return scheduler
