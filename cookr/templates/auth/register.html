@@ -1,15 +1,25 @@
-{% extends 'base.html' %}
-
-{% block header %}
-  <h1>{% block title %}Register{% endblock %}</h1>
-{% endblock %}
+{% extends 'baseNotLoggedIn.html' %}
 
 {% block content %}
-  <form method="post">
-    <label for="username">Username</label>
-    <input name="username" id="username" required>
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required>
-    <input type="submit" value="Register">
-  </form>
+<section id="registerForm">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10"> <!-- Adjusted for better form width -->
+                <h1>Register</h2>
+                <h5>Create an account to start finding recipes</h5>
+                <form action="" method="POST">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="password" name="password" placeholder="Password" required>
+                    </div>
+                    <button class="btn btn-secondary">Register</button>
+
+                    <button type="submit" value="Register" class="btn btn-primary">Log In</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

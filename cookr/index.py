@@ -1,12 +1,9 @@
 from flask import (
-<<<<<<< HEAD
     Blueprint, flash, g, redirect, render_template, request, url_for, session, jsonify
-=======
-    Blueprint, flash, g, redirect, render_template, request, url_for, session, jsonify, logging
->>>>>>> 7e05f652284689404d4c652a5dd2891d700396f1
 )
 from werkzeug.exceptions import abort
 
+from functools import wraps
 from cookr.auth import login_required
 from cookr.db import get_db
 from cookr.dbhelper import get_recipes_from_ids, get_single_recipe_from_id, get_recipedesc_from_id
@@ -17,15 +14,60 @@ from cookr.preference import update_preferences, recommendation
 
 bp = Blueprint('index', __name__)
 
+# LANDING HOME PAGE
+# DISPLAYS LANDING PAGE IF A USER IS NOT LOGGED IN 
+# DISPLAYS SWIPE PAGE IF USER IS LOGGED IN
 @bp.route('/')
-@login_required
 def home_page():
-    try:
-        #session.clear()
+    if 'user_id' in session:
         return render_template('main/index.html')
-    except Exception as e:
-        print("An Exception Occured:", e)
-        return "An error occured", 500
+    else:
+        return render_template('landing/landing.html')
+
+@bp.route('/contact')
+def contact():
+    return render_template('/landing/contact.html')
+
+@bp.route('/about')
+def about():
+    return render_template('/landing/about.html')
+
+@bp.route('/thankyou')
+def thankYou():
+    return render_template('/landing/thankYou.html')
+
+@bp.route('/thankyou2')
+def thankYou2():
+    return render_template('/landing/thankYou2.html')
+
+@bp.route('/landingtos')
+def landingTOS():
+    return render_template('/landing/landingTOS.html')
+
+@bp.route('/landingpp')
+def landingPP():
+    return render_template('/landing/landingPP.html')
+
+@bp.route('/onboarding')
+def onboarding():
+    return render_template('/main/onboarding.html')
+
+@bp.route('/saved')
+def saved():
+    return render_template('/main/saved.html')
+
+@bp.route('/tos')
+def tos():
+    return render_template('/main/mainTOS.html')
+
+@bp.route('/account')
+def account():
+    return render_template('/main/account.html')
+
+@bp.route('/privacypolicy')
+def privacypolicy():
+    return render_template('/main/mainPP.html')
+
 
 @bp.route('/findRecipes', methods=['GET', 'POST'])
 @login_required
@@ -150,59 +192,3 @@ def accept_reject_recipe(recipeID, decision):
 
     # Return success
     return jsonify({'success': True})
-    
-@bp.route('/saved')
-@login_required
-def saved():
-    try:
-        page = request.args.get('page', 1, type=int)
-        per_page = 10
-
-        db = get_db()
-        
-        # Check if the random recipe list is already in the session
-        if 'random_recipe_ids' not in session:
-            # Fetch a random set of recipe IDs
-            random_recipe_ids = db.execute(
-                'SELECT id FROM recipe ORDER BY RANDOM() LIMIT ?',
-                (per_page,)
-            ).fetchall()
-
-            # Store the list in the session
-            session['random_recipe_ids'] = [row['id'] for row in random_recipe_ids]
-
-        # Get the appropriate subset of recipe IDs based on the current page
-        start_index = (page - 1) * per_page
-        end_index = start_index + per_page
-        current_recipe_ids = session['random_recipe_ids'][start_index:end_index]
-
-        # Fetch the details of the recipes
-        savedRecipes = db.execute(
-            'SELECT r.id, title, image, imageType, saving_user'
-            ' FROM recipe r JOIN user u ON r.saving_user = u.id'
-            ' WHERE r.id IN ({})'.format(','.join(map(str, current_recipe_ids)))
-        ).fetchall()
-
-<<<<<<< HEAD
-        # Store the list in the session
-        session['random_recipe_ids'] = [row['id'] for row in random_recipe_ids]
-
-    # Get the appropriate subset of recipe IDs based on the current page
-    start_index = (page - 1) * per_page
-    end_index = start_index + per_page
-    current_recipe_ids = session['random_recipe_ids'][start_index:end_index]
-
-    # Fetch the details of the recipes
-    savedRecipes = db.execute(
-        'SELECT r.id, title, image, imageType, saving_user'
-        ' FROM recipe r JOIN user u ON r.saving_user = u.id'
-        ' WHERE r.id IN ({})'.format(','.join(map(str, current_recipe_ids)))
-    ).fetchall()
-
-    return render_template('main/saved.html', recipes=savedRecipes, page=page)
-=======
-        return render_template('main/saved.html', recipes=savedRecipes, page=page)
-    except Exception as e:
-        print("An Exception Occured:", e)
-        return "An error occured", 500
->>>>>>> 7e05f652284689404d4c652a5dd2891d700396f1

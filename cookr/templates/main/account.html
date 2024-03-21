@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section id="account">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md">
+            	<h5>Type to Edit</h4>
+                <form action="" method="POST">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Name">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="age" name="age" placeholder="Age">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="sex" name="sex" placeholder="Sex">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="weight" name="weight" placeholder="Weight">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="height" name="height" placeholder="Height">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="etc" name="etc" placeholder="ETC">
+                    </div>
+                    <div class="form-group alergies">
+                    	<input type="checkbox" id="alergy1" name="alergy1">
+                    	<label for="alergy1">Alergy1</label>
+                    	<input type="checkbox" id="alergy2" name="alergy2">
+                    	<label for="alergy2">Alergy2</label>
+                    	<input type="checkbox" id="alergy3" name="alergy3">
+                    	<label for="alergy3">Alergy3</label>
+                    	<input type="checkbox" id="alergy4" name="alergy4">
+                    	<label for="alergy4">Alergy4</label>
+                    </div>
+                    <div class="form-group goals">
+                    	<input type="checkbox" id="goal1" name="goal1">
+                    	<label for="goal1">Goal1</label>
+                    	<input type="checkbox" id="goal2" name="goal2">
+                    	<label for="goal2">Goal2</label>
+                    	<input type="checkbox" id="goal3" name="goal3">
+                    	<label for="goal3">Goal3</label>
+                    	<input type="checkbox" id="goal4" name="goal4">
+                    	<label for="goal4">Goal4</label>
+                    </div>
+                    <div class="form-group">
+                    	<div class="form-group">
+                            <textarea class="form-control" id="message" name="Message" rows="3" placeholder="Your Goals"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section> 
+
+{% endblock %}
