@@ -5,39 +5,27 @@
 <section id="mainSwipe">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md">
-              <br>
-              <br>
-              <br>
-              <br>
-              <br>
-              <br>
-              <br>
-              <button class="btn btn-danger">NO</button>
+            <div class="col-md d-flex flex-column justify-content-center"> 
+              <!-- Added onclick attribute to refresh page on button click -->
+              <button class="btn btn-danger align-self-center" onclick="location.reload();">NO</button>
             </div>
-            <div class="col-md"> <!-- Adjust the column size as needed -->
+            <div class="col-md-6">
                 <h1>SWIPE</h1>
-                <!-- MODAL HERE -->
                 <div class="card">
-                  <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1160&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" class="card-img-top">
+                  <img src="{{ image }}" alt="Recipe Image" class="card-img-top">
                   <div class="card-body">
-                    <h5 class="card-title">SOME FOOD NAME</h5>
-                    <p class="card-text">Ingredients, macros and time to cook</p>
-                    <a href="" class="btn btn-primary">Go To Site</a>
+                    <h5 class="card-title">{{ name }}</h5>
+                    <p class="card-text">{{ time }}</p>
+                    <p>{{ macros }}</p>
+                    <p>{{ ingredients }}</p>
+                    <a href="{{ site }}" class="btn btn-primary">Go To Site</a>
                   </div>
                 </div>
-                <br>
-                <button class="btn btn-info">Filters</button>
+                <button class="btn btn-info align-self-center mt-3">Filters</button> 
             </div>
-            <div class="col-md">
-              <br>
-              <br>
-              <br>
-              <br>
-              <br>
-              <br>
-              <br>
-              <button class="btn btn-success">YES</button>
+            <div class="col-md d-flex flex-column justify-content-center"> 
+              <!-- Added onclick attribute to refresh page on button click -->
+              <button class="btn btn-success align-self-center" onclick="location.reload();">YES</button>
             </div>
         </div>
     </div>

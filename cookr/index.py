@@ -7,12 +7,32 @@ from functools import wraps
 from cookr.auth import login_required
 from cookr.db import get_db
 from cookr.dbhelper import get_recipes_from_ids, get_single_recipe_from_id, get_recipedesc_from_id
-from cookr.edamamrecipeapi import get_recipes
+from cookr.edamamrecipeapi import get_recipes, random_recipe
 from cookr.recipeapi import get_recipe_desc
 from cookr.recipeclasses import Recipe, RecipeRecommendation
 from cookr.preference import update_preferences, recommendation
 
+import json
+
 bp = Blueprint('index', __name__)
+
+def get_random_recipe():
+    recipe_data = random_recipe('chicken')
+    recipe_name = recipe_data["label"]
+    macros = {
+        "Calories": recipe_data["totalNutrients"]["ENERC_KCAL"]["quantity"],
+        "Fat": recipe_data["totalNutrients"]["FAT"]["quantity"],
+        "Carbohydrates": recipe_data["totalNutrients"]["CHOCDF"]["quantity"],
+        "Protein": recipe_data["totalNutrients"]["PROCNT"]["quantity"]
+    }
+
+    ingredients = recipe_data["ingredientLines"]
+    recipe_url = recipe_data["url"]
+    image_url = recipe_data["images"]["REGULAR"]["url"]
+    time_to_cook = recipe_data["totalTime"]
+
+    return recipe_name, json.dumps(macros, indent=2), json.dumps(ingredients, indent=2), recipe_url, image_url, str(time_to_cook) + " minutes"
+
 
 # LANDING HOME PAGE
 # DISPLAYS LANDING PAGE IF A USER IS NOT LOGGED IN 
@@ -20,7 +40,8 @@ bp = Blueprint('index', __name__)
 @bp.route('/')
 def home_page():
     if 'user_id' in session:
-        return render_template('main/index.html')
+        rName, rMacros, rIngredients, rURL, rIMG, rTime = get_random_recipe()
+        return render_template('main/index.html', image=rIMG, name=rName, time=rTime, macros=rMacros, ingredients=rIngredients, site = rURL)
     else:
         return render_template('landing/landing.html')
 
@@ -67,6 +88,11 @@ def account():
 @bp.route('/privacypolicy')
 def privacypolicy():
     return render_template('/main/mainPP.html')
+
+# JUST FOR DEVELOPMENT
+@bp.route('/test')
+def test():
+    return render_template('/main/test.html')
 
 
 @bp.route('/findRecipes', methods=['GET', 'POST'])

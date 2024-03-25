@@ -220,6 +220,21 @@
   text-align: center;
 }
 
+#mainSwipe .card {
+    height: 60vh; /* Adjust the height as needed */
+    overflow: hidden; /* Ensures the card itself does not overflow */
+}
+
+#mainSwipe .card-body {
+    overflow-y: auto; /* Enables vertical scrolling within the card body */
+    height: 20vh /* Adjust based on your card image and header sizes */
+}
+
+#mainSwipe .card-img-top {
+    width: 35vw;
+    height: 35vw; /* Adjust based on your preference */
+    object-fit: cover; /* Ensures the image covers the set height without stretching */
+}
 
 /* SAVED*/
 /**/
