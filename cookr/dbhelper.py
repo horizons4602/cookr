@@ -204,3 +204,51 @@ def get_recipedesc_from_id(recipe_id):
         raise Exception(f"Database Error: Recipe taste description with ID {recipe_id} query could not be executed.")
 
     return RecipeDesc(recipedesc['sweetness'], recipedesc['saltiness'], recipedesc['sourness'], recipedesc['bitterness'], recipedesc['savoriness'], recipedesc['fattiness'], recipedesc['spiciness'])
+
+def insert_saved_recipe(user_id, recipe_id):
+    # Get current time and date, formatted for DATETIME type
+    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    db = get_db()
+
+    recipe = get_single_recipe_from_id(recipe_id)
+
+    try:
+        cursor = db.cursor()
+
+        # Check the number of saved recipes for the user
+        cursor.execute("SELECT COUNT(*) FROM saved_recipe WHERE saving_user = ?", (user_id,))
+        num_saved_recipes = cursor.fetchone()[0]
+
+        if num_saved_recipes >= 6:
+            # Delete the oldest recipe (replace)
+            cursor.execute("DELETE FROM saved_recipe WHERE saving_user = ? ORDER BY creationTime ASC LIMIT 1", (user_id,))
+            print(f"Oldest recipe replaced for user {user_id}.")
+
+        # Insert the new recipe
+        cursor.execute(
+            "INSERT INTO saved_recipe (title, creationTime, url, calories, totalWeight, totalTime, protein, carbs, fat, sugar, sodium, saving_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (recipe.title, current_datetime, recipe.url, recipe.calories, recipe.totalWeight, recipe.totalTime, recipe.protein, recipe.carbs, recipe.fat, recipe.sugar, recipe.sodium, user_id),
+        )
+        db.commit()
+    except db.IntegrityError:
+        error = f"Database Error: Recipe with ID {recipe_id} could not be saved for user {user_id}."
+        print(error)
+
+
+def get_saved_recipes(user_id):
+    db = get_db()
+
+    recipes = []
+
+    try:
+        saved_recipes = db.execute('SELECT * FROM saved_recipe WHERE saving_user = ?', (user_id,)).fetchall()
+
+        for saved_recipe in saved_recipes:
+            # Recipe not total, only specific fields
+            recipe = Recipe(None, None, None, saved_recipe['url'], saved_recipe['title'], None, saved_recipe['calories'], saved_recipe['totalWeight'], saved_recipe['totalTime'], saved_recipe['protein'], saved_recipe['carbs'], saved_recipe['fat'], saved_recipe['sugar'], saved_recipe['sodium'])
+            recipes.append(recipe)
+    except:
+        raise Exception(f"Database Error: Saved recipes with ID {user_id} query could not be executed.")
+
+    return saved_recipes
