@@ -210,8 +210,7 @@
 
 
 /* SWIPE HOME */
-/**/
-/**/
+
 #mainSwipe {
   height: 88vh; /* 100% of the viewport height */
   display: flex;
@@ -227,13 +226,24 @@
 
 #mainSwipe .card-body {
     overflow-y: auto; /* Enables vertical scrolling within the card body */
-    height: 20vh /* Adjust based on your card image and header sizes */
+    height: 20vh; /* Adjust based on your card image and header sizes */
+    text-align: left; /* Align text to the left in the card body */
 }
 
 #mainSwipe .card-img-top {
     width: 35vw;
     height: 35vw; /* Adjust based on your preference */
     object-fit: cover; /* Ensures the image covers the set height without stretching */
+}
+
+#mainSwipe ul {
+    padding-left: 20px; /* Adjust padding to align with your design, ensuring the list aligns with other content */
+    text-align: left; /* Ensure this is left to align the text of li elements */
+}
+
+#mainSwipe li {
+    list-style-type: none; /* Removes bullet points, keep this if you want no bullets */
+    text-align: left; /* Align text to the left for each ingredient */
 }
 
 /* SAVED*/

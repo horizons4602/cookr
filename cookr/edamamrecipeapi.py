@@ -37,6 +37,7 @@ def random_recipe(query):
             random_recipe = random.choice(recipes).get('recipe')
             return random_recipe
         else:
+            print("NONE")
             return "NONE FOUND"
 
 

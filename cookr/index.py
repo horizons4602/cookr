@@ -6,7 +6,7 @@ from werkzeug.exceptions import abort
 from functools import wraps
 from cookr.auth import login_required
 from cookr.db import get_db
-from cookr.dbhelper import get_recipes_from_ids, get_single_recipe_from_id, get_recipedesc_from_id
+from cookr.dbhelper import get_recipes_from_ids, get_single_recipe_from_id, get_recipedesc_from_id, insert_recipedesc_cache
 from cookr.edamamrecipeapi import get_recipes, random_recipe
 from cookr.recipeapi import get_recipe_desc
 from cookr.recipeclasses import Recipe, RecipeRecommendation
@@ -17,21 +17,29 @@ import json
 bp = Blueprint('index', __name__)
 
 def get_random_recipe():
-    recipe_data = random_recipe('chicken')
+    recipe_data = random_recipe('salmon')  # Assuming this function fetches recipe data correctly
     recipe_name = recipe_data["label"]
-    macros = {
-        "Calories": recipe_data["totalNutrients"]["ENERC_KCAL"]["quantity"],
-        "Fat": recipe_data["totalNutrients"]["FAT"]["quantity"],
-        "Carbohydrates": recipe_data["totalNutrients"]["CHOCDF"]["quantity"],
-        "Protein": recipe_data["totalNutrients"]["PROCNT"]["quantity"]
-    }
 
+    # Extracting Recipe ID from URI
+    uri = recipe_data["uri"]
+    recipe_id = uri.split("#recipe_")[1]
+
+    # Extracting Serving Size
+    serving_size = recipe_data["yield"]
+
+    macros = {
+        "Calories": round(recipe_data["totalNutrients"]["ENERC_KCAL"]["quantity"], 2),
+        "Fat": round(recipe_data["totalNutrients"]["FAT"]["quantity"], 2),
+        "Carbohydrates": round(recipe_data["totalNutrients"]["CHOCDF"]["quantity"], 2),
+        "Protein": round(recipe_data["totalNutrients"]["PROCNT"]["quantity"], 2)
+    }
     ingredients = recipe_data["ingredientLines"]
     recipe_url = recipe_data["url"]
     image_url = recipe_data["images"]["REGULAR"]["url"]
     time_to_cook = recipe_data["totalTime"]
 
-    return recipe_name, json.dumps(macros, indent=2), json.dumps(ingredients, indent=2), recipe_url, image_url, str(time_to_cook) + " minutes"
+    # Return the data without converting macros and ingredients to JSON strings
+    return recipe_name, macros, ingredients, recipe_url, image_url, f"{time_to_cook} minutes", recipe_id, serving_size
 
 
 # LANDING HOME PAGE
@@ -40,7 +48,7 @@ def get_random_recipe():
 @bp.route('/')
 def home_page():
     if 'user_id' in session:
-        rName, rMacros, rIngredients, rURL, rIMG, rTime = get_random_recipe()
+        rName, rMacros, rIngredients, rURL, rIMG, rTime, rID, rServingSize = get_random_recipe()
         return render_template('main/index.html', image=rIMG, name=rName, time=rTime, macros=rMacros, ingredients=rIngredients, site = rURL)
     else:
         return render_template('landing/landing.html')
@@ -70,29 +78,29 @@ def landingPP():
     return render_template('/landing/landingPP.html')
 
 @bp.route('/onboarding')
+@login_required
 def onboarding():
     return render_template('/main/onboarding.html')
 
 @bp.route('/saved')
+@login_required
 def saved():
     return render_template('/main/saved.html')
 
 @bp.route('/tos')
+@login_required
 def tos():
     return render_template('/main/mainTOS.html')
 
 @bp.route('/account')
+@login_required
 def account():
     return render_template('/main/account.html')
 
 @bp.route('/privacypolicy')
+@login_required
 def privacypolicy():
     return render_template('/main/mainPP.html')
-
-# JUST FOR DEVELOPMENT
-@bp.route('/test')
-def test():
-    return render_template('/main/test.html')
 
 
 @bp.route('/findRecipes', methods=['GET', 'POST'])
