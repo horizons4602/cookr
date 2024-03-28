@@ -267,7 +267,7 @@
 /**/
 /**/
 #mainTOSHero {
-  height: 75vh; /* 100% of the viewport height */
+  margin-top: 13vh;
   margin-bottom: 13vh;
   display: flex;
   justify-content: center; /* Center horizontally in the viewport */
@@ -279,7 +279,7 @@
 /**/
 /**/
 #mainPPHero {
-  height: 75vh; /* 100% of the viewport height */
+  margin-top: 13vh; /* 100% of the viewport height */
   margin-bottom: 13vh;
   display: flex;
   justify-content: center; /* Center horizontally in the viewport */
