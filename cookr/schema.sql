@@ -116,8 +116,8 @@ CREATE TABLE recipe_taste (
 );
 
 CREATE TABLE saved_recipe (
-  id INTEGER PRIMARY KEY,
   title TEXT NOT NULL,
+  creationTime DATETIME NOT NULL,
   url TEXT NOT NULL,
   calories FLOAT NOT NULL,
   totalWeight FLOAT NOT NULL,
