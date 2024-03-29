@@ -27,7 +27,7 @@ def get_recipes(params=None, user_id=None):
 
         # Get health restrictions
         dietaryRestrictions = get_user_health_restrictions(user_id)
-        dietaryRestrictionsParam = {key: True for key, value in dietaryRestrictions.items() if value}
+        dietaryRestrictionsParam = {"health": key for key, value in dietaryRestrictions.items() if value}
         params.update(dietaryRestrictionsParam)
 
         response = requests.get('https://api.edamam.com/api/recipes/v2' + defaultParams + appAuthParams +

@@ -7,7 +7,7 @@ from functools import wraps
 from cookr.auth import login_required
 from cookr.db import get_db
 from cookr.dbhelper import get_recipes_from_ids, get_single_recipe_from_id, get_recipedesc_from_id, insert_recipedesc_cache
-from cookr.edamamrecipeapi import get_recipes, random_recipe
+from cookr.edamamrecipeapi import get_recipes
 from cookr.recipeapi import get_recipe_desc
 from cookr.recipeclasses import Recipe, RecipeRecommendation
 from cookr.preference import update_preferences, recommendation
@@ -17,27 +17,44 @@ import json
 bp = Blueprint('index', __name__)
 
 def get_random_recipe():
-    recipe_data = random_recipe('salmon')  # Assuming this function fetches recipe data correctly
-    recipe_name = recipe_data["label"]
+    cuisineType = None
+    mealType = None
+    ingredients = "chicken"
+    user_id = session['user_id']
+
+    # Comment for you in the code
+    # I remember why the mealType was required
+    # It's because the edamam API requires SOMETHING otherwise it will fail
+    # I assume having the user choose a mealType "breakfast, dinner, snack, etc." is a safer bet then having them choose an ingredient to query by ingredient
+    # Available values : Breakfast, Dinner, Lunch, Snack, Teatime (from documentation)
+    # Just food for thought, it's up to you :)
+
+    userParams = {'cuisineType': cuisineType, 'mealType': mealType, 'q': ingredients}
+
+    # If userParam value is empty, remove it from the dictionary
+    userParams = {k: v for k, v in userParams.items() if v}
+
+    session['userParams'] = userParams
+    recipes = get_recipes(userParams, user_id)  # Assuming this function fetches recipe data correctly
+    recipe_data = recipes[0]
+    recipe_name = recipe_data.title
 
     # Extracting Recipe ID from URI
-    uri = recipe_data["uri"]
-    recipe_id = uri.split("#recipe_")[1]
+    recipe_id = recipe_data.id
 
     # Extracting Serving Size
-    serving_size = recipe_data["yield"]
+    serving_size = 1.0
 
     macros = {
-        "Calories": round(recipe_data["totalNutrients"]["ENERC_KCAL"]["quantity"], 2),
-        "Fat": round(recipe_data["totalNutrients"]["FAT"]["quantity"], 2),
-        "Carbohydrates": round(recipe_data["totalNutrients"]["CHOCDF"]["quantity"], 2),
-        "Protein": round(recipe_data["totalNutrients"]["PROCNT"]["quantity"], 2)
+        "Calories": recipe_data.calories,
+        "Fat": recipe_data.fat,
+        "Carbohydrates": recipe_data.carbs,
+        "Protein": recipe_data.protein,
     }
-    ingredients = recipe_data["ingredientLines"]
-    recipe_url = recipe_data["url"]
-    image_url = recipe_data["images"]["REGULAR"]["url"]
-    time_to_cook = recipe_data["totalTime"]
-
+    ingredients = recipe_data.ingredients
+    recipe_url = recipe_data.url
+    image_url = recipe_data.image
+    time_to_cook = recipe_data.totalTime
     # Return the data without converting macros and ingredients to JSON strings
     return recipe_name, macros, ingredients, recipe_url, image_url, f"{time_to_cook} minutes", recipe_id, serving_size
 

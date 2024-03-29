@@ -97,10 +97,11 @@ def get_single_recipe_from_id(recipe_id):
 
     return recipe
 
-def get_user_health_restrictions(user_id):
+def get_user_health_restrictions(user_id: int):
     db = get_db()
 
-    user_diet_info = db.execute('SELECT * FROM user_health WHERE saving_user = ?', (user_id,)).fetchone()
+    # Assuming `user_id` is the parameter value you want to bind in the query
+    user_diet_info = db.execute('SELECT * FROM user_health WHERE saving_user = ?', (user_id,)).fetchone() 
 
     cursor = db.execute('SELECT * FROM user_health WHERE saving_user = ?', (user_id,))
 
