@@ -74,6 +74,6 @@ class UserAllergies(models.Model):
 class UserAPIkeys(models.Model):
 	user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
 
-	edemam_api_key = models.CharField(max_length=255)
-	edemam_app_id = models.CharField(max_length=255)
+	edamam_api_key = models.CharField(max_length=255)
+	edamam_app_id = models.CharField(max_length=255)
 	spoon_api_key = models.CharField(max_length=255)
