@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section id="account">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md">
+            	<h2>Type to Edit</h2>
+                <form action="" method="POST">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="age" name="age" placeholder="Age">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="sex" name="sex" placeholder="Sex">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="weight" name="weight" placeholder="Weight">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="height" name="height" placeholder="Height">
+                    </div>
+                    <div class="form-group alergies">
+                        <h2>Which of these are you allergic to?</h2>
+                    	<input type="checkbox" id="alergy1" name="alergy1">
+                    	<label for="alergy1">Penuts</label>
+                    	<input type="checkbox" id="alergy2" name="alergy2">
+                    	<label for="alergy2">Alergy2</label>
+                    	<input type="checkbox" id="alergy3" name="alergy3">
+                    	<label for="alergy3">Alergy3</label>
+                    	<input type="checkbox" id="alergy4" name="alergy4">
+                    	<label for="alergy4">Alergy4</label>
+                    </div>
+                    <div class="form-group goals">
+                        <h2>Do You Want to...</h2>
+                        <input type="radio" id="goal1" name="goal" value="lose_weight">
+                        <label for="goal1">Lose Weight</label>
+                        <input type="radio" id="goal2" name="goal" value="gain_weight">
+                        <label for="goal2">Gain Weight</label>
+                        <input type="radio" id="goal3" name="goal" value="maintain_weight">
+                        <label for="goal3">Maintain Weight</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
