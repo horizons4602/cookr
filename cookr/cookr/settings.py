@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'landingPage.apps.LandingpageConfig',
     'accounts.apps.AccountsConfig',
     'recipes.apps.RecipesConfig',
+    'favorites.apps.FavoritesConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
