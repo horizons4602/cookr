@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from landingPage.views import Index, About, Contact, Privacy, TermsOfService, ThankYouTwo, ThankYou
 
 urlpatterns = [
@@ -11,4 +11,5 @@ urlpatterns = [
     path('terms_of_service/', TermsOfService.as_view(), name='TermsOfService'),
     path('thank_you/', ThankYou.as_view(), name='ThankYou'),
     path('thank_you_2/', ThankYouTwo.as_view(), name='ThankYouTwo'),
+    path('', include('accounts.urls')),
 ]
