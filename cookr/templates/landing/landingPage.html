@@ -1,19 +1,27 @@
 {% extends 'landing/baseNLI.html' %}
 
 {% block content %}
+
 <section id="landingHero">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col"> <!-- Adjust the column size as needed -->
                 <h1>Find Your Next Favorite Recipe</h1>
                 <h5>COOKR is currently in development, if you would like to stay updated please subscribe to our newsletter! You can also access the demo by registering an account.</h5>
-				<form>
-					<h1>HERE IS EMAIL INPUT -- FORM</h1>
+				<form method="post" novalidate class="p-4 shadow rounded bg-light">
+					{% csrf_token %}
+					<div class="mb-3">
+						{{ form.email.label_tag }}
+						{{ form.email }}
+						{{ form.email.errors }}
+					</div>
+					<button class="btn btn-primary" type="submit">Subscribe</button>
 				</form>
             </div>
         </div>
     </div>
 </section>
+
 <section id="landingAbout">
 	<div class="container">
 		<div class="row justify-content-center">
@@ -62,4 +70,5 @@
 		</div>
 	</div>
 </section>
+
 {% endblock %}

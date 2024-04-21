@@ -8,17 +8,17 @@
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container">
-    <a class="navbar-brand" href="">COOKR</a>
+    <a class="navbar-brand" href="{% url 'Index' %}">COOKR</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav ml-auto">
-        <li class="nav-item"><a class="nav-link" href="">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="">About</a></li>
-        <li class="nav-item"><a class="nav-link" href="">Contact</a></li>
-        <li class="nav-item"><a class="nav-link" href="">Register</a></li>
-        <li class="nav-item"><a class="nav-link" href="">Log In</a></li>
+        <li class="nav-item"><a class="nav-link" href="{%  url 'Index' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'About' %}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'Contact' %}">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Log In</a></li>
       </ul>
     </div>
   </div>
@@ -38,8 +38,8 @@
       <script>document.write(new Date().getFullYear());</script> Cookr. All Rights Reserved.
     </div>
     <div class="col-md-4 text-md-right">
-      <a href="" class="text-reset mx-2">Privacy Policy</a>
-      <a href="" class="text-reset mx-2">Terms of Service</a>
+      <a href="{% url 'PrivacyPolicy' %}" class="text-reset mx-2">Privacy Policy</a>
+      <a href="{% url 'TermsOfService' %}" class="text-reset mx-2">Terms of Service</a>
     </div>
   </div>
 </footer>

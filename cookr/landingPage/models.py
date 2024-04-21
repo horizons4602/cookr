@@ -6,6 +6,12 @@ class Contact(models.Model):
 	email = models.EmailField()
 	message = models.TextField()
 
+	def __str__(self):
+		return self.name
+
 
 class Newsletter(models.Model):
-	email = models.EmailField()
+	email = models.EmailField(unique=True)
+
+	def __str__(self):
+		return self.email
