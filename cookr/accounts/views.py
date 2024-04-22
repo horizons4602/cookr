@@ -7,6 +7,8 @@ from .forms import SignUpForm, ProfileForm, UserPreferencesForm, UserAllergiesFo
 from django.views.decorators.http import require_POST
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
+from recipes.views import edamam_api_call
+from recipes.models import Recipe
 
 # Constants for activity multipliers
 ACTIVITY_MULTIPLIERS = {
@@ -89,6 +91,7 @@ class Account(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
+
         forms = {
             'profile_form': ProfileForm(request.POST, instance=request.user.profile),
             'preferences_form': UserPreferencesForm(request.POST, instance=request.user.userpreferences),
@@ -99,6 +102,12 @@ class Account(LoginRequiredMixin, View):
         if all(form.is_valid() for form in forms.values()):
             for form in forms.values():
                 form.save()
+
+            user = request.user
+            recipe_instance, created = Recipe.objects.get_or_create(user=user)
+            recipe_data = edamam_api_call(user)
+            recipe_instance.add_recipes(recipe_data)
+
             return redirect('account')
         else:
             context = {**forms}
