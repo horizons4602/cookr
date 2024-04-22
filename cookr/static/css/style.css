@@ -59,3 +59,16 @@
   margin-top: 10vh;
 }
 
+/* STYLES FOR THANK YOU TWO */
+
+#thankYou2Hero {
+  min-height: 68vh;
+  margin-top: 20vh;
+}
+
+/* STYLES FOR THANK YOU */
+
+#thankYouHero {
+  min-height: 68vh;
+  margin-top: 20vh;
+}
