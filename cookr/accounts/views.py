@@ -4,6 +4,21 @@ from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import SignUpForm, ProfileForm, UserPreferencesForm, UserAllergiesForm, UserAPIkeysForm
+from django.views.decorators.http import require_POST
+from django.contrib.auth import logout
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
+
+@require_POST
+def logout_view(request):
+    logout(request)
+    # Redirect to a success page, such as the home page or login page after logout
+    return HttpResponseRedirect(reverse('login'))
+
+
+def index(request):
+    return redirect("../demo/login")
 
 
 class Register(FormView):
