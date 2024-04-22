@@ -72,3 +72,10 @@
   min-height: 68vh;
   margin-top: 20vh;
 }
+
+/* STYLES FOR REGISTER */
+
+#RegisterForm {
+  min-height: 80vh;
+  margin-top: 8vh;
+}
