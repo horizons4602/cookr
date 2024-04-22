@@ -113,11 +113,11 @@ class Main(TemplateView):
                 "image": recipe["Image_Url"],
                 "name": recipe["Name"],
                 "time": recipe["Time"],
-                "calories": recipe["Calories"],
-                "protein": recipe["Protein"],
+                "calories": round(recipe["Calories"]),
+                "protein": round(recipe["Protein"]),
                 "ingredient": recipe["Ingredients"],
-                "fat": recipe["Fat"],
-                "carbohydrates": recipe["Carbs"],
+                "fat": round(recipe["Fat"]),
+                "carbohydrates": round(recipe["Carbs"]),
                 "site": recipe["SiteUrl"],
             })
 
