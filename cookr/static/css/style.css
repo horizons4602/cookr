@@ -131,29 +131,29 @@
   margin-bottom: 20px;
 }
 
-.card {
+#mainSwipe .card {
   max-height: 600px;
   overflow: auto; /* Allows scrolling within the card if content exceeds max height */
   margin-bottom: 20px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-.card-img-top {
+#mainSwipe .card-img-top {
   max-height: 250px; /* Limiting image height */
   object-fit: cover; /* Ensures the image covers the area without stretching */
   width: 100%;
 }
 
-.card-body {
+#mainSwipe .card-body {
   padding: 15px;
 }
 
-.card-title {
+#mainSwipe .card-title {
   margin-bottom: 15px;
   font-size: 1.5rem;
 }
 
-.card-text {
+#mainSwipe .card-text {
   font-size: 1rem;
   margin-bottom: 10px;
 }
