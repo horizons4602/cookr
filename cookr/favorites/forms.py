@@ -1,5 +1,6 @@
 from django import forms
 
+
 class RecipeReplaceForm(forms.Form):
     RECIPE_CHOICES = [
         ('saved_one', 'Saved One'),

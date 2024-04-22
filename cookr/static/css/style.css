@@ -164,3 +164,15 @@
   min-height: 78vh;
   margin-top: 10vh;
 }
+
+/* STYLES FOR OPTION */
+#OptionSection {
+  min-height: 68vh;
+  margin-top: 20vh;
+  text-align: center; /* Center-aligns the text */
+}
+
+#OptionSection .btn-primary {
+  width: 200px; /* Sets a fixed width for all buttons */
+  margin-top: 20px; /* Adds top margin to buttons */
+}

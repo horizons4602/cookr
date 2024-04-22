@@ -5,11 +5,13 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+<section id="OptionSection">
     <h1>Choose which saved recipe to replace</h1>
     <form method="post">
         {% csrf_token %}
         {{ form|crispy }}
-        <input type="submit" value="Replace">
+        <input class="btn btn-primary" type="submit" value="Replace">
     </form>
 	<a href="{{ URL }}" class="btn btn-primary">OR GO TO SITE</a>
+</section>
 {% endblock %}
