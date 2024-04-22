@@ -3,15 +3,30 @@ from django.conf import settings
 
 
 class Profile(models.Model):
+	SEX_CHOICES = (
+		(0, 'Male'),
+		(1, 'Female'),
+	)
+	GOAL_CHOICES = (
+		(0, 'Maintain weight'),
+		(1, 'Lose weight'),
+		(2, 'Gain weight'),
+	)
+	ACTIVITY_LEVEL_CHOICES = (
+		(0, 'Sedentary'),
+		(1, 'Lightly active'),
+		(2, 'Moderately active'),
+		(3, 'Very active'),
+		(4, 'Super active'),
+	)
+
 	user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
-
 	age = models.IntegerField(default=0)
-	sex = models.IntegerField(default=0) # 0 = male, 1 = female
-	height = models.IntegerField(default=0)
+	sex = models.IntegerField(default=0, choices=SEX_CHOICES)
+	height_in_inches = models.IntegerField(default=0)
 	weight = models.IntegerField(default=0)
-	activity_level = models.IntegerField(default=0)
-
-	goal = models.IntegerField(default=0)  # 0 = maintain weight - 1 = loose weight - 2 = gain weight
+	activity_level = models.IntegerField(default=0, choices=ACTIVITY_LEVEL_CHOICES)
+	goal = models.IntegerField(default=0, choices=GOAL_CHOICES)
 
 
 class UserPreferences(models.Model):
