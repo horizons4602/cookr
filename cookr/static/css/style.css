@@ -89,31 +89,72 @@
 
 /* STYLES FOR ACCOUNT */
 
-    #macros-section {
-        background-color: #f7f7f7;
-        padding: 20px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-    }
+#macros-section {
+  background-color: #f7f7f7;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
 
-    #macros-section ul {
-        list-style-type: none;
-        padding: 0;
-    }
+#macros-section ul {
+  list-style-type: none;
+  padding: 0;
+}
 
-    #macros-section li {
-        background-color: #fff;
-        padding: 10px;
-        border-radius: 5px;
-        margin-bottom: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        font-weight: bold;
-        color: #555;
-    }
+#macros-section li {
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  font-weight: bold;
+  color: #555;
+}
 
-    #profile-edit-section {
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    }
+#profile-edit-section {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+
+/* MAIN STYLES*/
+
+#mainSwipe {
+  min-height: 78vh;
+  margin-top: 10vh;
+}
+
+#mainSwipe h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.card {
+  max-height: 600px;
+  overflow: auto; /* Allows scrolling within the card if content exceeds max height */
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.card-img-top {
+  max-height: 250px; /* Limiting image height */
+  object-fit: cover; /* Ensures the image covers the area without stretching */
+  width: 100%;
+}
+
+.card-body {
+  padding: 15px;
+}
+
+.card-title {
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+}
+
+.card-text {
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
