@@ -5,34 +5,41 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-			<h2>Recommended Macros</h2>
-			<ul>
-				<li>Recommended Calories: {{ calories }}Kcal</li>
-				<li>Recommended Protein: {{ protein }}g</li>
-				<li>Recommended Carbs: {{ carbs }}g</li>
-				<li>Recommended Fat: {{ fat }}g</li>
-				<li>Recommended Sugar: {{ sugar }}g</li>
-				<li>Recommended Sodium: {{ sodium }}g</li>
-			</ul>
-            <h2 class="text-center mb-4">Edit Your Profile</h2>
-            <form method="post" class="needs-validation">
-                {% csrf_token %}
-                <div class="card">
-                    <div class="card-body">
-                        {{ profile_form|crispy }}
-                        {{ allergies_form|crispy }}
-                        {{ apikeys_form|crispy }}
+            <!-- Macros Section -->
+            <div id="macros-section">
+                <h2>Recommended Macros</h2>
+                <ul>
+                    <li>Recommended Calories: {{ calories }}Kcal</li>
+                    <li>Recommended Protein: {{ protein }}g</li>
+                    <li>Recommended Carbs: {{ carbs }}g</li>
+                    <li>Recommended Fat: {{ fat }}g</li>
+                    <li>Recommended Sugar: {{ sugar }}g</li>
+                    <li>Recommended Sodium: {{ sodium }}g</li>
+                </ul>
+            </div>
+
+            <!-- Profile Editing Section -->
+            <div id="profile-edit-section">
+                <h2 class="text-center mb-4">Edit Your Profile</h2>
+                <form method="post" class="needs-validation">
+                    {% csrf_token %}
+                    <div class="card">
+                        <div class="card-body">
+                            {{ profile_form|crispy }}
+                            {{ allergies_form|crispy }}
+                            {{ apikeys_form|crispy }}
+                        </div>
                     </div>
-                </div>
-                {% if profile_form.non_field_errors %}
-                    <div class="alert alert-danger">
-                        {{ profile_form.non_field_errors }}
+                    {% if profile_form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ profile_form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
                     </div>
-                {% endif %}
-                <div class="text-center mt-3">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 </div>

@@ -86,3 +86,34 @@
   min-height: 80vh;
   margin-top: 8vh;
 }
+
+/* STYLES FOR ACCOUNT */
+
+    #macros-section {
+        background-color: #f7f7f7;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    #macros-section ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    #macros-section li {
+        background-color: #fff;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        font-weight: bold;
+        color: #555;
+    }
+
+    #profile-edit-section {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
