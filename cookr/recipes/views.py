@@ -95,14 +95,29 @@ class Main(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        recipes = edamam_api_call(user)
-        context["image"] = recipes["Image_Url"][recipes["Seen"]]
-        context["name"] = recipes["Name"][recipes["Seen"]]
-        context["time"] = recipes["Time"][recipes["Seen"]]
-        context["calories"] = recipes["Calories"][recipes["Seen"]]
-        context["protein"] = recipes["Protein"][recipes["Seen"]]
-        context["ingredient"] = recipes["Ingredients"][recipes["Seen"]]
-        context["fat"] = recipes["Fat"][recipes["Seen"]]
-        context["carbohydrates"] = recipes["Carbs"][recipes["Seen"]]
-        context["site"] = recipes["SiteUrl"][recipes["Seen"]]
+        recipe_instance, created = Recipe.objects.get_or_create(user=user)
+
+        # Attempt to fetch an unseen recipe
+        recipe = recipe_instance.get_next_recipe()
+
+        if not recipe:
+            # If no unseen recipes are available, make an API call
+            recipe = edamam_api_call(user)
+            if recipe != "NONE FOUND":
+                recipe_instance.add_recipes(recipe)
+                recipe = recipe_instance.get_next_recipe()  # Retrieve the first of the newly added recipes
+
+        # Assign recipe details to the context if available
+        if recipe:
+            context.update({
+                "image": recipe["Image_Url"],
+                "name": recipe["Name"],
+                "time": recipe["Time"],
+                "calories": recipe["Calories"],
+                "protein": recipe["Protein"],
+                "ingredient": recipe["Ingredients"],
+                "fat": recipe["Fat"],
+                "carbohydrates": recipe["Carbs"],
+                "site": recipe["SiteUrl"],
+            })
         return context

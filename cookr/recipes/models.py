@@ -9,17 +9,37 @@ def default_user():
 
 class Recipe(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recipes', default=default_user)
-    image_url = models.URLField(blank=True, null=True)
-    name = models.CharField(max_length=255)
-    time = models.CharField(max_length=100, default="0 min")
-    calories = models.FloatField(default=0)
-    fat = models.FloatField(default=0)
-    carbs = models.FloatField(default=0)
-    protein = models.FloatField(default=0)
-    ingredients = models.TextField(default="")
-    site_url = models.URLField(blank=True, null=True)
-    items = models.IntegerField(default=0)
-    seen = models.IntegerField(default=0)
+    recipe_data = models.JSONField(default=dict)
+    items_count = models.IntegerField(default=0)
+    last_seen_index = models.IntegerField(default=-1)  # starts from -1 meaning no items seen
 
-    def __str__(self):
-        return self.name
+    def add_recipes(self, recipes):
+        """ Append new recipes to the existing recipe data and update count. """
+        for key, value in recipes.items():
+            if key in self.recipe_data:
+                # Ensure the existing data for the key is a list
+                if not isinstance(self.recipe_data[key], list):
+                    self.recipe_data[key] = [self.recipe_data[key]]
+                self.recipe_data[key].extend(value if isinstance(value, list) else [value])
+            else:
+                self.recipe_data[key] = value if isinstance(value, list) else [value]
+        self.items_count = len(self.recipe_data.get('Name', []))  # Safely get 'Name' or default to empty list
+        self.save()
+
+    def get_next_recipe(self):
+        """ Return the next unseen recipe if available, skipping non-list data entries. """
+        if self.last_seen_index + 1 < self.items_count:
+            self.last_seen_index += 1
+            self.save()
+            # Exclude 'Items' and 'Seen' from the keys to be processed
+            recipe_keys = [key for key in self.recipe_data if key not in ['Items', 'Seen']]
+            try:
+                return {key: self.recipe_data[key][self.last_seen_index] for key in recipe_keys}
+            except TypeError as e:
+                # Log the error and the problematic data
+                print(f"Error accessing data: {e}")
+                print({key: type(self.recipe_data[key]) for key in recipe_keys})  # This will show data types
+                raise
+        return None
+
+
