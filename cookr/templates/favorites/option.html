@@ -1,0 +1,15 @@
+<!-- template.html -->
+
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h1>Choose which saved recipe to replace</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" value="Replace">
+    </form>
+	<a href="{{ URL }}" class="btn btn-primary">OR GO TO SITE</a>
+{% endblock %}

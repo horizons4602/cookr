@@ -42,4 +42,14 @@ class Recipe(models.Model):
                 raise
         return None
 
+    def get_current_recipe(self):
+        recipe_keys = [key for key in self.recipe_data if key not in ['Items', 'Seen']]
+        try:
+            return {key: self.recipe_data[key][self.last_seen_index] for key in recipe_keys}
+        except TypeError as e:
+            # Log the error and the problematic data
+            print(f"Error accessing data: {e}")
+            print({key: type(self.recipe_data[key]) for key in recipe_keys})  # This will show data types
+            raise
+
 

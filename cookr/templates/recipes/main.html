@@ -25,15 +25,17 @@
                         </ul>
                         <p>Ingredients:</p>
                         <ul>
-                            <li>{{ ingredient }}</li>
-                        </ul>
+						{% for ing in ingredient %}
+							<li>{{ ing }}</li>
+						{% endfor %}
+						</ul>
                         <a href="{{ site }}" class="btn btn-primary">Go To Site</a>
                     </div>
                 </div>
             </div>
             <div class="col-md d-flex flex-column justify-content-center">
-                <button class="btn btn-success align-self-center" onclick="location.reload();">YES</button>
-            </div>
+				<a class="btn btn-success align-self-center" href="{% url 'Save' %}">YES</a>
+			</div>
         </div>
     </div>
 </section>

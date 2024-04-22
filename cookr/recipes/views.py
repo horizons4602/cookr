@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from .models import Recipe
 from accounts.models import UserPreferences, UserAPIkeys, Profile
@@ -70,7 +70,7 @@ def edamam_api_call(user):
                     carbs = recipe_info.get('totalNutrients', {}).get('CHOCDF', {}).get('quantity')
                     protein = recipe_info.get('totalNutrients', {}).get('PROCNT', {}).get('quantity')
                     ingredients_data = recipe_info.get('ingredients', [])
-                    ingredients = [ingredient.get('text') for ingredient in ingredients_data]
+                    ingredients = [ingredient.get('food') for ingredient in ingredients_data]
 
                     recipe_data["Image_Url"].append(image_url)
                     recipe_data["Name"].append(name)
@@ -120,4 +120,5 @@ class Main(TemplateView):
                 "carbohydrates": recipe["Carbs"],
                 "site": recipe["SiteUrl"],
             })
+
         return context

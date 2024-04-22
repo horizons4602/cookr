@@ -10,6 +10,27 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 
+def calculate_calories(weight, height, age, sex, activity_level):
+    """
+    Calculate daily calorie needs based on user information.
+
+    Parameters:
+    - weight: User's weight in kilograms
+    - height: User's height in centimeters
+    - age: User's age in years
+    - sex: User's sex (either 'Male' or 'Female')
+    - activity_level: User's activity level (a float value)
+
+    Returns:
+    - Calories: Daily calorie needs based on the Harris-Benedict equation
+    """
+    if sex == 0:
+        calories = (66 + (6.23 * weight) + (12.7 * height) - (6.8 * age)) * activity_level
+    else:
+        calories = (655 + (4.35 * weight) + (4.7 * height) - (4.7 * age)) * activity_level
+    return calories
+
+
 @require_POST
 def logout_view(request):
     logout(request)
@@ -35,6 +56,20 @@ class Account(LoginRequiredMixin, View):
     template_name = 'accounts/account.html'
 
     def get(self, request, *args, **kwargs):
+        weight = request.user.profile.weight
+        height = request.user.profile.height
+        age = request.user.profile.age
+        sex = request.user.profile.sex
+        activity_level = request.user.profile.activity_level
+
+        calories = calculate_calories(weight, height, age, sex, activity_level)
+
+        user_protein = calories / 4
+        user_carbs = calories / 4
+        user_fat = calories / 9
+        user_sugar = 36.0 if sex == 0 else 25.0  # Added sugar limit in grams
+        user_sodium = 2300.0
+
         profile_form = ProfileForm(instance=request.user.profile)
         preferences_form = UserPreferencesForm(instance=request.user.userpreferences)
         allergies_form = UserAllergiesForm(instance=request.user.userallergies)
@@ -44,7 +79,8 @@ class Account(LoginRequiredMixin, View):
             'profile_form': profile_form,
             'preferences_form': preferences_form,
             'allergies_form': allergies_form,
-            'apikeys_form': apikeys_form
+            'apikeys_form': apikeys_form,
+            'protein': user_protein,
         }
         return render(request, self.template_name, context)
 

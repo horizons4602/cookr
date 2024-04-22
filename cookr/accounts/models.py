@@ -6,15 +6,10 @@ class Profile(models.Model):
 	user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
 
 	age = models.IntegerField(default=0)
+	sex = models.IntegerField(default=0) # 0 = male, 1 = female
 	height = models.IntegerField(default=0)
 	weight = models.IntegerField(default=0)
 	activity_level = models.IntegerField(default=0)
-	calories = models.IntegerField(default=0)
-	protein = models.IntegerField(default=0)
-	carbs = models.IntegerField(default=0)
-	fat = models.IntegerField(default=0)
-	sugar = models.IntegerField(default=0)
-	sodium = models.IntegerField(default=0)
 
 	goal = models.IntegerField(default=0)  # 0 = maintain weight - 1 = loose weight - 2 = gain weight
 
