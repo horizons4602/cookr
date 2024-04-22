@@ -21,3 +21,26 @@
 #landingAbout {
   min-height: 80vh;
 }
+
+/* STYLES FOR ABOUT */
+
+#aboutHero {
+  min-height: 40vh;
+  margin-top: 20vh;
+}
+
+#aboutAbout {
+  min-height: 30vh;
+  margin-bottom: 20vh;
+}
+
+#aboutFeatures {
+  margin-bottom: 20vh;
+}
+
+/* STYLES FOR CONTACT */
+
+#contactContact {
+  min-height: 68vh;
+  margin-top: 20vh;
+}
