@@ -1,16 +1,17 @@
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from .models import Recipe
-from accounts.models import UserPreferences, UserAPIkeys, Profile
+from accounts.models import UserPreferences, UserAPIkeys, Profile, UserAllergies
 import requests
+
 
 def edamam_api_call(user):
     try:
         user_api_keys = UserAPIkeys.objects.get(user=user)
-        user_preferences = UserPreferences.objects.get(user=user)
+        user_preferences = UserAllergies.objects.get(user=user)
         user_profile = Profile.objects.get(user=user)
         health_labels = []
-        for field in UserPreferences._meta.fields:
+        for field in UserAllergies._meta.fields:
             if field.name != "user" and getattr(user_preferences, field.name):
                 health_labels.append(field.name.replace("_", "-").lower())
 
@@ -31,6 +32,8 @@ def edamam_api_call(user):
             "random": True,
             "field": ["image", "label", "url", "ingredients", "calories", "totalTime", "totalNutrients"],
         }
+
+        print(params)
 
         response = requests.get(url, params=params)
         if response.status_code != 200:
@@ -82,7 +85,6 @@ class Main(TemplateView):
             recipe = recipe_instance.get_next_recipe()
 
         if recipe:
-            print(recipe["Image_Url"])
             context = {
                 "image": recipe["Image_Url"],
                 "name": recipe["Name"],
