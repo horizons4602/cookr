@@ -158,3 +158,9 @@
   margin-bottom: 10px;
 }
 
+/* STYLES FOR SAVED */
+
+#saved {
+  min-height: 78vh;
+  margin-top: 10vh;
+}
