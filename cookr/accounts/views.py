@@ -60,8 +60,11 @@ class Account(LoginRequiredMixin, View):
             for form in forms:
                 form.save()
             return redirect('account')  # Redirect to a success page or profile page
+        else:
+            for form in forms:
+                if form.errors:
+                    print(form.errors)  # Logging the form errors can be helpful
 
-        # If forms are not valid, re-render the page with error messages
         context = {
             'profile_form': profile_form,
             'preferences_form': preferences_form,

@@ -18,21 +18,18 @@
                         <br>
                         <p>Macros:</p>
                         <ul>
-                            <li>Calories: {{ macros.Calories }} kcal</li>
-                            <li>Fat: {{ macros.Fat }} g</li>
-                            <li>Carbohydrates: {{ macros.Carbohydrates }} g</li>
-                            <li>Protein: {{ macros.Protein }} g</li>
+                            <li>Calories: {{ calories }} kcal</li>
+                            <li>Fat: {{ fat }} g</li>
+                            <li>Carbohydrates: {{ carbohydrates }} g</li>
+                            <li>Protein: {{ protein }} g</li>
                         </ul>
                         <p>Ingredients:</p>
                         <ul>
-                            {% for ingredient in ingredients %}
                             <li>{{ ingredient }}</li>
-                            {% endfor %}
                         </ul>
                         <a href="{{ site }}" class="btn btn-primary">Go To Site</a>
                     </div>
                 </div>
-                <button class="btn btn-info align-self-center mt-3" data-toggle="modal" data-target="#filtersModal">Filters</button>
             </div>
             <div class="col-md d-flex flex-column justify-content-center">
                 <button class="btn btn-success align-self-center" onclick="location.reload();">YES</button>
@@ -40,25 +37,5 @@
         </div>
     </div>
 </section>
-
-
-
-<!-- Modal Structure -->
-<div class="modal fade" id="filtersModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalLabel">Please choose your filters</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="location.reload();">Filter</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="location.reload();">Filter</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 {% endblock %}

@@ -51,7 +51,7 @@ class UserAllergies(models.Model):
 	low_potassium = models.BooleanField(default=False)
 	low_sugar = models.BooleanField(default=False)
 	lupine_free = models.BooleanField(default=False)
-	mediterranean_free = models.BooleanField(default=False)
+	Mediterranean = models.BooleanField(default=False)
 	mollusk_free = models.BooleanField(default=False)
 	mustard_free = models.BooleanField(default=False)
 	no_oil_added = models.BooleanField(default=False)
