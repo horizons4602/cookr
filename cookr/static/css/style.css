@@ -176,3 +176,11 @@
   width: 200px; /* Sets a fixed width for all buttons */
   margin-top: 20px; /* Adds top margin to buttons */
 }
+
+/* STYLES FOR ERROR PAGE */
+
+#ErrorSection {
+  text-align: center;
+  min-height: 68vh;
+  margin-top: 20vh;
+}
