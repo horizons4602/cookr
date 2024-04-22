@@ -1,0 +1,23 @@
+
+/* STYLES FOR LANDING PAGE*/
+
+#landingHero {
+  min-height: 80vh;
+  margin-top: 10vh;
+}
+
+/* Removes the drop shadow from the form */
+#landingHero form {
+    box-shadow: none; !important;
+}
+
+/* Centers the button below the form and adjusts styling to match the form */
+#landingHero .btn-primary {
+    display: block; /* Make the button a block element to fill the form width */
+    width: fit-content; /* Adjust width to content size */
+    margin: 20px auto 0; /* Centers the button horizontally and adds space from the form */
+}
+
+#landingAbout {
+  min-height: 80vh;
+}
