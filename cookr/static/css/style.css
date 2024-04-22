@@ -44,3 +44,18 @@
   min-height: 68vh;
   margin-top: 20vh;
 }
+
+/* STYLES FOR PRIVACY POLICY */
+
+#mainPPHero {
+  min-height: 68vh;
+  margin-top: 10vh;
+}
+
+/* STYLES FOR TOS */
+
+#mainTOSHero {
+  min-height: 68vh;
+  margin-top: 10vh;
+}
+
